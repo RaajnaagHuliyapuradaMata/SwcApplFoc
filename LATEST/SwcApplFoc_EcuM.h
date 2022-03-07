@@ -9,8 +9,6 @@
 /*****************************************************/
 #include "Compiler_Cfg_SwcApplFoc.h"
 
-#include "EcuM_Client.h"
-
 /*****************************************************/
 /* #DEFINES                                          */
 /*****************************************************/
@@ -22,14 +20,6 @@
 /*****************************************************/
 /* TYPEDEFS                                          */
 /*****************************************************/
-class interface_SwcApplFoc_EcuM : public interface_EcuM_Client{
-   public:
-/*****************************************************/
-/* FUNCTIONS                                         */
-/*****************************************************/
-      virtual FUNC(void, SWCAPPLFOC_CODE) InitFunction   (void) = 0;
-      virtual FUNC(void, SWCAPPLFOC_CODE) DeInitFunction (void) = 0;
-};
 
 /*****************************************************/
 /* CONSTS                                            */
@@ -42,7 +32,11 @@ class interface_SwcApplFoc_EcuM : public interface_EcuM_Client{
 /*****************************************************/
 /* OBJECTS                                           */
 /*****************************************************/
-extern interface_SwcApplFoc_EcuM *EcuM_Client_ptr_SwcApplFoc;
+extern infEcuMClient *gptrinfEcuMClient_SwcApplFoc;
+
+/*****************************************************/
+/* FUNCTIONS                                         */
+/*****************************************************/
 
 /*****************************************************/
 /* EOF                                               */

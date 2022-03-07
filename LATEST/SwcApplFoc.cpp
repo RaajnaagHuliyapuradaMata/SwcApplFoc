@@ -24,8 +24,6 @@
 /*****************************************************/
 class module_SwcApplFoc:
       public abstract_module
-   ,  public interface_SwcApplFoc_EcuM
-   ,  public interface_SwcApplFoc_SchM
 {
    public:
       FUNC(void, SWCAPPLFOC_CODE) InitFunction   (void);
@@ -45,9 +43,8 @@ class module_SwcApplFoc:
 /* OBJECTS                                           */
 /*****************************************************/
 module_SwcApplFoc SwcApplFoc;
-
-interface_SwcApplFoc_EcuM *EcuM_Client_ptr_SwcApplFoc = &SwcApplFoc;
-interface_SwcApplFoc_SchM *SchM_Client_ptr_SwcApplFoc = &SwcApplFoc;
+infEcuMClient*    gptrinfEcuMClient_SwcApplFoc = &SwcApplFoc;
+infSchMClient*    gptrinfSchMClient_SwcApplFoc = &SwcApplFoc;
 
 /*****************************************************/
 /* FUNCTIONS                                         */
