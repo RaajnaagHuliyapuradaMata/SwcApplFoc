@@ -32,7 +32,7 @@
 /*****************************************************/
 /* OBJECTS                                           */
 /*****************************************************/
-extern interface_SwcApplFoc_SchM *SchM_Client_ptr_SwcApplFoc;
+extern infSchMClient *gptrinfSchMClient_SwcApplFoc;
 
 /*****************************************************/
 /* FUNCTIONS                                         */
