@@ -32,7 +32,7 @@
 /*****************************************************/
 /* OBJECTS                                           */
 /*****************************************************/
-extern infEcuMClient *gptrinfEcuMClient_SwcApplFoc;
+extern infEcuMClient* gptrinfEcuMClient_SwcApplFoc;
 
 /*****************************************************/
 /* FUNCTIONS                                         */
