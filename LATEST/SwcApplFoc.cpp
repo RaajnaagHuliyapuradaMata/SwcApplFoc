@@ -7,8 +7,8 @@
 /* #INCLUDES                                         */
 /*****************************************************/
 #include "module.h"
-#include "SwcApplFoc_EcuM.h"
-#include "SwcApplFoc_SchM.h"
+#include "infSwcApplFoc_EcuM.h"
+#include "infSwcApplFoc_SchM.h"
 #include "SwcApplFoc_Unused.h"
 
 /*****************************************************/
@@ -28,6 +28,7 @@ class module_SwcApplFoc:
    public:
       FUNC(void, SWCAPPLFOC_CODE) InitFunction   (void);
       FUNC(void, SWCAPPLFOC_CODE) DeInitFunction (void);
+      FUNC(void, SWCAPPLFOC_CODE) GetVersionInfo (void);
       FUNC(void, SWCAPPLFOC_CODE) MainFunction   (void);
 };
 
@@ -44,6 +45,7 @@ class module_SwcApplFoc:
 /*****************************************************/
 module_SwcApplFoc SwcApplFoc;
 infEcuMClient*    gptrinfEcuMClient_SwcApplFoc = &SwcApplFoc;
+infDcmClient*     gptrinfDcmClient_SwcApplFoc  = &SwcApplFoc;
 infSchMClient*    gptrinfSchMClient_SwcApplFoc = &SwcApplFoc;
 
 /*****************************************************/
@@ -53,6 +55,9 @@ FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::InitFunction(void){
 }
 
 FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::DeInitFunction(void){
+}
+
+FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::GetVersionInfo(void){
 }
 
 FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::MainFunction(void){
