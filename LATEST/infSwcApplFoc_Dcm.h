@@ -1,6 +1,6 @@
 #pragma once
 /*****************************************************/
-/* File   : SwcApplFoc_SchM.h                        */
+/* File   : infSwcApplFoc_Dcm.h                      */
 /* Author : Naagraaj HM                              */
 /*****************************************************/
 
@@ -32,7 +32,7 @@
 /*****************************************************/
 /* OBJECTS                                           */
 /*****************************************************/
-extern infSchMClient* gptrinfSchMClient_SwcApplFoc;
+extern infDcmClient* gptrinfDcmClient_SwcApplFoc;
 
 /*****************************************************/
 /* FUNCTIONS                                         */

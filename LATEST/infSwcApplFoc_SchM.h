@@ -1,15 +1,13 @@
+#pragma once
 /*****************************************************/
-/* File   : SwcApplFoc.cpp                           */
+/* File   : infSwcApplFoc_SchM.h                     */
 /* Author : Naagraaj HM                              */
 /*****************************************************/
 
 /*****************************************************/
 /* #INCLUDES                                         */
 /*****************************************************/
-#include "module.h"
-#include "infSwcApplFoc_EcuM.h"
-#include "infSwcApplFoc_Dcm.h"
-#include "infSwcApplFoc_SchM.h"
+#include "Compiler_Cfg_SwcApplFoc.h"
 
 /*****************************************************/
 /* #DEFINES                                          */
@@ -22,15 +20,6 @@
 /*****************************************************/
 /* TYPEDEFS                                          */
 /*****************************************************/
-class module_SwcApplFoc:
-      public abstract_module
-{
-   public:
-      FUNC(void, SWCAPPLFOC_CODE) InitFunction   (void);
-      FUNC(void, SWCAPPLFOC_CODE) DeInitFunction (void);
-      FUNC(void, SWCAPPLFOC_CODE) GetVersionInfo (void);
-      FUNC(void, SWCAPPLFOC_CODE) MainFunction   (void);
-};
 
 /*****************************************************/
 /* CONSTS                                            */
@@ -43,27 +32,11 @@ class module_SwcApplFoc:
 /*****************************************************/
 /* OBJECTS                                           */
 /*****************************************************/
-module_SwcApplFoc SwcApplFoc;
-infEcuMClient*    gptrinfEcuMClient_SwcApplFoc = &SwcApplFoc;
-infDcmClient*     gptrinfDcmClient_SwcApplFoc  = &SwcApplFoc;
-infSchMClient*    gptrinfSchMClient_SwcApplFoc = &SwcApplFoc;
+extern infSchMClient* gptrinfSchMClient_SwcApplFoc;
 
 /*****************************************************/
 /* FUNCTIONS                                         */
 /*****************************************************/
-FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::InitFunction(void){
-}
-
-FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::DeInitFunction(void){
-}
-
-FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::GetVersionInfo(void){
-}
-
-FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::MainFunction(void){
-}
-
-#include "SwcApplFoc_Unused.h"
 
 /*****************************************************/
 /* EOF                                               */
