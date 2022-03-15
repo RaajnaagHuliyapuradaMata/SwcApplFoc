@@ -32,7 +32,7 @@
 /******************************************************************************/
 /* OBJECTS                                                                    */
 /******************************************************************************/
-extern infDcmClient* gptrinfDcmClient_SwcApplFoc;
+extern CONSTP2VAR(infDcmClient, SWCAPPLFOC_VAR, SWCAPPLFOC_CONST) gptrinfDcmClient_SwcApplFoc;
 
 /******************************************************************************/
 /* FUNCTIONS                                                                  */
