@@ -6,6 +6,8 @@
 /******************************************************************************/
 /* #INCLUDES                                                                  */
 /******************************************************************************/
+#include "infSwcApplFoc_Version.h"
+
 #include "module.h"
 #include "infSwcApplFoc_EcuM.h"
 #include "infSwcApplFoc_Dcm.h"
