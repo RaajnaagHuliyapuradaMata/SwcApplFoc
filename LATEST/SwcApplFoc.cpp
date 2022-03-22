@@ -7,7 +7,7 @@
 /* #INCLUDES                                                                  */
 /******************************************************************************/
 #include "module.h"
-#include "infSwcApplFoc_Version.h"
+//#include "SwcApplFoc_Cfg.h"
 #include "infSwcApplFoc_EcuM.h"
 #include "infSwcApplFoc_Dcm.h"
 #include "infSwcApplFoc_SchM.h"
@@ -15,10 +15,19 @@
 /******************************************************************************/
 /* #DEFINES                                                                   */
 /******************************************************************************/
+#define SWCAPPLFOC_AR_RELEASE_MAJOR_VERSION                                    4
+#define SWCAPPLFOC_AR_RELEASE_MINOR_VERSION                                    3
 
 /******************************************************************************/
 /* MACROS                                                                     */
 /******************************************************************************/
+#if(SWCAPPLFOC_AR_RELEASE_MAJOR_VERSION != STD_AR_RELEASE_MAJOR_VERSION)
+   #error "Incompatible SWCAPPLFOC_AR_RELEASE_MAJOR_VERSION!"
+#endif
+
+#if(SWCAPPLFOC_AR_RELEASE_MINOR_VERSION != STD_AR_RELEASE_MINOR_VERSION)
+   #error "Incompatible SWCAPPLFOC_AR_RELEASE_MINOR_VERSION!"
+#endif
 
 /******************************************************************************/
 /* TYPEDEFS                                                                   */
@@ -61,6 +70,11 @@ FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::DeInitFunction(void){
 }
 
 FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::GetVersionInfo(void){
+#if(STD_ON == SwcApplFoc_DevErrorDetect)
+//TBD: API parameter check
+   Det_ReportError(
+   );
+#endif
 }
 
 FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::MainFunction(void){
