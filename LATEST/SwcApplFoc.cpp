@@ -40,6 +40,16 @@ class module_SwcApplFoc:
       FUNC(void, SWCAPPLFOC_CODE) DeInitFunction (void);
       FUNC(void, SWCAPPLFOC_CODE) GetVersionInfo (void);
       FUNC(void, SWCAPPLFOC_CODE) MainFunction   (void);
+
+   private:
+      CONST(Std_TypeVersionInfo, SWCAPPLFOC_CONST) VersionInfo = {
+            0x0000
+         ,  0xFFFF
+         ,  0x01
+         ,  '0'
+         ,  '1'
+         ,  '0'
+      };
 };
 
 /******************************************************************************/
