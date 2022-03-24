@@ -7,7 +7,7 @@
 /* #INCLUDES                                                                  */
 /******************************************************************************/
 #include "module.h"
-//#include "SwcApplFoc_Cfg.h"
+//#include "CfgSwcApplFoc.h"
 #include "infSwcApplFoc_EcuM.h"
 #include "infSwcApplFoc_Dcm.h"
 #include "infSwcApplFoc_SchM.h"
