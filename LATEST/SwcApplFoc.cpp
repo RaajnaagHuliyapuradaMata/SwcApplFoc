@@ -6,11 +6,11 @@
 /******************************************************************************/
 /* #INCLUDES                                                                  */
 /******************************************************************************/
-#include "module.h"
-//#include "CfgSwcApplFoc.h"
-#include "infSwcApplFoc_EcuM.h"
-#include "infSwcApplFoc_Dcm.h"
-#include "infSwcApplFoc_SchM.h"
+#include "module.hpp"
+//#include "CfgSwcApplFoc.hpp"
+#include "infSwcApplFoc_EcuM.hpp"
+#include "infSwcApplFoc_Dcm.hpp"
+#include "infSwcApplFoc_SchM.hpp"
 
 /******************************************************************************/
 /* #DEFINES                                                                   */
@@ -90,7 +90,7 @@ FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::GetVersionInfo(void){
 FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::MainFunction(void){
 }
 
-#include "SwcApplFoc_Unused.h"
+#include "SwcApplFoc_Unused.hpp"
 
 /******************************************************************************/
 /* EOF                                                                        */
