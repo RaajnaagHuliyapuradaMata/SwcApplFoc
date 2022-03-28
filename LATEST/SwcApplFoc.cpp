@@ -90,8 +90,6 @@ FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::GetVersionInfo(void){
 FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::MainFunction(void){
 }
 
-#include "SwcApplFoc_Unused.hpp"
-
 /******************************************************************************/
 /* EOF                                                                        */
 /******************************************************************************/
