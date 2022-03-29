@@ -7,7 +7,6 @@
 /* #INCLUDES                                                                  */
 /******************************************************************************/
 #include "module.hpp"
-//#include "CfgSwcApplFoc.hpp"
 #include "infSwcApplFoc_EcuM.hpp"
 #include "infSwcApplFoc_Dcm.hpp"
 #include "infSwcApplFoc_SchM.hpp"
@@ -36,37 +35,40 @@ class module_SwcApplFoc:
       public abstract_module
 {
    public:
+      module_SwcApplFoc(Std_TypeVersionInfo lVersionInfo) : abstract_module(lVersionInfo){
+      }
       FUNC(void, SWCAPPLFOC_CODE) InitFunction   (void);
       FUNC(void, SWCAPPLFOC_CODE) DeInitFunction (void);
-      FUNC(void, SWCAPPLFOC_CODE) GetVersionInfo (void);
       FUNC(void, SWCAPPLFOC_CODE) MainFunction   (void);
-
-   private:
-      CONST(Std_TypeVersionInfo, SWCAPPLFOC_CONST) VersionInfo = {
-            0x0000
-         ,  0xFFFF
-         ,  0x01
-         ,  '0'
-         ,  '1'
-         ,  '0'
-      };
 };
+
+extern VAR(module_SwcApplFoc, SWCAPPLFOC_VAR) SwcApplFoc;
 
 /******************************************************************************/
 /* CONSTS                                                                     */
 /******************************************************************************/
+CONSTP2VAR(infEcuMClient, SWCAPPLFOC_VAR, SWCAPPLFOC_CONST) gptrinfEcuMClient_SwcApplFoc = &SwcApplFoc;
+CONSTP2VAR(infDcmClient,  SWCAPPLFOC_VAR, SWCAPPLFOC_CONST) gptrinfDcmClient_SwcApplFoc  = &SwcApplFoc;
+CONSTP2VAR(infSchMClient, SWCAPPLFOC_VAR, SWCAPPLFOC_CONST) gptrinfSchMClient_SwcApplFoc = &SwcApplFoc;
 
 /******************************************************************************/
 /* PARAMS                                                                     */
 /******************************************************************************/
+//#include "CfgSwcApplFoc.hpp"
 
 /******************************************************************************/
 /* OBJECTS                                                                    */
 /******************************************************************************/
-VAR(module_SwcApplFoc, SWCAPPLFOC_VAR) SwcApplFoc;
-CONSTP2VAR(infEcuMClient, SWCAPPLFOC_VAR, SWCAPPLFOC_CONST) gptrinfEcuMClient_SwcApplFoc = &SwcApplFoc;
-CONSTP2VAR(infDcmClient,  SWCAPPLFOC_VAR, SWCAPPLFOC_CONST) gptrinfDcmClient_SwcApplFoc  = &SwcApplFoc;
-CONSTP2VAR(infSchMClient, SWCAPPLFOC_VAR, SWCAPPLFOC_CONST) gptrinfSchMClient_SwcApplFoc = &SwcApplFoc;
+VAR(module_SwcApplFoc, SWCAPPLFOC_VAR) SwcApplFoc(
+   {
+         0x0000
+      ,  0xFFFF
+      ,  0x01
+      ,  '0'
+      ,  '1'
+      ,  '0'
+   }
+);
 
 /******************************************************************************/
 /* FUNCTIONS                                                                  */
@@ -77,14 +79,6 @@ FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::InitFunction(void){
 
 FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::DeInitFunction(void){
    SwcApplFoc.IsInitDone = E_NOT_OK;
-}
-
-FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::GetVersionInfo(void){
-#if(STD_ON == SwcApplFoc_DevErrorDetect)
-//TBD: API parameter check
-   Det_ReportError(
-   );
-#endif
 }
 
 FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::MainFunction(void){
