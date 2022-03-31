@@ -37,10 +37,9 @@ class module_SwcApplFoc:
    public:
       module_SwcApplFoc(Std_TypeVersionInfo lVersionInfo) : abstract_module(lVersionInfo){
       }
-      FUNC(void, _CODE) InitFunction(
-         CONSTP2CONST(CfgModule_TypeAbstract, _CONFIG_DATA, _APPL_CONST) lptrCfgModule
+      FUNC(void, SWCAPPLFOC_CODE) InitFunction(
+         CONSTP2CONST(CfgModule_TypeAbstract, SWCAPPLFOC_CONFIG_DATA, SWCAPPLFOC_APPL_CONST) lptrCfgModule
       );
-      FUNC(void, SWCAPPLFOC_CODE) InitFunction   (void);
       FUNC(void, SWCAPPLFOC_CODE) DeInitFunction (void);
       FUNC(void, SWCAPPLFOC_CODE) MainFunction   (void);
 };
@@ -77,23 +76,39 @@ VAR(module_SwcApplFoc, SWCAPPLFOC_VAR) SwcApplFoc(
 /* FUNCTIONS                                                                  */
 /******************************************************************************/
 FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::InitFunction(
-   CONSTP2CONST(CfgSwcApplFoc_Type, CFGSWCAPPLFOC_CONFIG_DATA, CFGSWCAPPLFOC_APPL_CONST) lptrCfgSwcApplFoc
+   CONSTP2CONST(CfgModule_TypeAbstract, SWCAPPLFOC_CONFIG_DATA, SWCAPPLFOC_APPL_CONST) lptrCfgModule
 ){
-   if(NULL_PTR == lptrCfgSwcApplFoc){
+   if(E_OK == IsInitDone){
 #if(STD_ON == SwcApplFoc_DevErrorDetect)
       Det_ReportError(
       );
 #endif
    }
    else{
-// check lptrCfgSwcApplFoc for memory faults
+      if(NULL_PTR == lptrCfgModule){
+#if(STD_ON == SwcApplFoc_DevErrorDetect)
+         Det_ReportError(
+         );
+#endif
+      }
+      else{
+// check lptrCfgModule for memory faults
 // use PBcfg_SwcApplFoc as back-up configuration
+      }
+      IsInitDone = E_OK;
    }
-   SwcApplFoc.IsInitDone = E_OK;
 }
 
 FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::DeInitFunction(void){
-   SwcApplFoc.IsInitDone = E_NOT_OK;
+   if(E_OK != IsInitDone){
+#if(STD_ON == SwcApplFoc_DevErrorDetect)
+      Det_ReportError(
+      );
+#endif
+   }
+   else{
+      IsInitDone = E_NOT_OK;
+   }
 }
 
 FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::MainFunction(void){
