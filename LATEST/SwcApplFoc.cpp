@@ -78,6 +78,7 @@ VAR(module_SwcApplFoc, SWCAPPLFOC_VAR) SwcApplFoc(
 FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::InitFunction(
    CONSTP2CONST(CfgModule_TypeAbstract, SWCAPPLFOC_CONFIG_DATA, SWCAPPLFOC_APPL_CONST) lptrCfgModule
 ){
+#if(STD_ON == SwcApplFoc_InitCheck)
    if(E_OK == IsInitDone){
 #if(STD_ON == SwcApplFoc_DevErrorDetect)
       Det_ReportError(
@@ -85,6 +86,7 @@ FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::InitFunction(
 #endif
    }
    else{
+#endif
       if(NULL_PTR == lptrCfgModule){
 #if(STD_ON == SwcApplFoc_DevErrorDetect)
          Det_ReportError(
@@ -96,10 +98,13 @@ FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::InitFunction(
 // use PBcfg_SwcApplFoc as back-up configuration
       }
       IsInitDone = E_OK;
+#if(STD_ON == SwcApplFoc_InitCheck)
    }
+#endif
 }
 
 FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::DeInitFunction(void){
+#if(STD_ON == SwcApplFoc_InitCheck)
    if(E_OK != IsInitDone){
 #if(STD_ON == SwcApplFoc_DevErrorDetect)
       Det_ReportError(
@@ -107,11 +112,26 @@ FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::DeInitFunction(void){
 #endif
    }
    else{
+#endif
       IsInitDone = E_NOT_OK;
+#if(STD_ON == SwcApplFoc_InitCheck)
    }
+#endif
 }
 
 FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::MainFunction(void){
+#if(STD_ON == SwcApplFoc_InitCheck)
+   if(E_OK != IsInitDone){
+#if(STD_ON == SwcApplFoc_DevErrorDetect)
+      Det_ReportError(
+      );
+#endif
+   }
+   else{
+#endif
+#if(STD_ON == SwcApplFoc_InitCheck)
+   }
+#endif
 }
 
 /******************************************************************************/
