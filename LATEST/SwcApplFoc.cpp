@@ -14,18 +14,18 @@
 /******************************************************************************/
 /* #DEFINES                                                                   */
 /******************************************************************************/
-#define SWCAPPLFOC_AR_RELEASE_MAJOR_VERSION                                    4
-#define SWCAPPLFOC_AR_RELEASE_MINOR_VERSION                                    3
+#define SWCAPPLFOC_AR_RELEASE_VERSION_MAJOR                                    4
+#define SWCAPPLFOC_AR_RELEASE_VERSION_MINOR                                    3
 
 /******************************************************************************/
 /* MACROS                                                                     */
 /******************************************************************************/
-#if(SWCAPPLFOC_AR_RELEASE_MAJOR_VERSION != STD_AR_RELEASE_MAJOR_VERSION)
-   #error "Incompatible SWCAPPLFOC_AR_RELEASE_MAJOR_VERSION!"
+#if(SWCAPPLFOC_AR_RELEASE_VERSION_MAJOR != STD_AR_RELEASE_VERSION_MAJOR)
+   #error "Incompatible SWCAPPLFOC_AR_RELEASE_VERSION_MAJOR!"
 #endif
 
-#if(SWCAPPLFOC_AR_RELEASE_MINOR_VERSION != STD_AR_RELEASE_MINOR_VERSION)
-   #error "Incompatible SWCAPPLFOC_AR_RELEASE_MINOR_VERSION!"
+#if(SWCAPPLFOC_AR_RELEASE_VERSION_MINOR != STD_AR_RELEASE_VERSION_MINOR)
+   #error "Incompatible SWCAPPLFOC_AR_RELEASE_VERSION_MINOR!"
 #endif
 
 /******************************************************************************/
@@ -63,8 +63,10 @@ CONSTP2VAR(infSchMClient, SWCAPPLFOC_VAR, SWCAPPLFOC_CONST) gptrinfSchMClient_Sw
 /******************************************************************************/
 VAR(module_SwcApplFoc, SWCAPPLFOC_VAR) SwcApplFoc(
    {
-         0x0000
-      ,  0xFFFF
+         SWCAPPLFOC_AR_RELEASE_VERSION_MAJOR
+      ,  SWCAPPLFOC_AR_RELEASE_VERSION_MINOR
+      ,  0x00
+      ,  0xFF
       ,  0x01
       ,  '0'
       ,  '1'
