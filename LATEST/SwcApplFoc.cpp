@@ -101,8 +101,8 @@ FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::InitFunction(
             lptrCfg = lptrCfgModule;
          }
          else{
-// use PBcfg_CanIf as back-up configuration
-            lptrCfg = PBcfg_CanIf;
+// use PBcfgCanIf as back-up configuration
+            lptrCfg = &PBcfgSwcApplFoc;
          }
       }
       IsInitDone = E_OK;
