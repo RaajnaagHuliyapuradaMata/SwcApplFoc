@@ -96,8 +96,14 @@ FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::InitFunction(
 #endif
       }
       else{
+         if(STD_LOW){
 // check lptrCfgModule for memory faults
-// use PBcfg_SwcApplFoc as back-up configuration
+            lptrCfg = lptrCfgModule;
+         }
+         else{
+// use PBcfg_CanIf as back-up configuration
+            lptrCfg = PBcfg_CanIf;
+         }
       }
       IsInitDone = E_OK;
 #if(STD_ON == SwcApplFoc_InitCheck)
