@@ -102,7 +102,7 @@ FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::InitFunction(
          }
          else{
 // use PBcfgCanIf as back-up configuration
-            lptrCfg = &PBcfgSwcApplFoc;
+//            lptrCfg = &PBcfgSwcApplFoc;
          }
       }
       IsInitDone = E_OK;
