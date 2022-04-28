@@ -7,6 +7,7 @@
 /* #INCLUDES                                                                  */
 /******************************************************************************/
 #include "Module.hpp"
+#include "SwcApplFoc_core.hpp"
 #include "infSwcApplFoc_EcuM.hpp"
 #include "infSwcApplFoc_Dcm.hpp"
 #include "infSwcApplFoc_SchM.hpp"
