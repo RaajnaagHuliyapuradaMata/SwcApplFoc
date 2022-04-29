@@ -7,10 +7,9 @@
 /* #INCLUDES                                                                  */
 /******************************************************************************/
 #include "Module.hpp"
+//#include "CfgSwcApplFoc.hpp"
 #include "SwcApplFoc_core.hpp"
-#include "infSwcApplFoc_EcuM.hpp"
-#include "infSwcApplFoc_Dcm.hpp"
-#include "infSwcApplFoc_SchM.hpp"
+#include "infSwcApplFoc.hpp"
 
 /******************************************************************************/
 /* #DEFINES                                                                   */
@@ -34,6 +33,7 @@
 /******************************************************************************/
 class module_SwcApplFoc:
       public abstract_module
+   ,  public class_SwcApplFoc_Functionality
 {
    public:
       module_SwcApplFoc(Std_TypeVersionInfo lVersionInfo) : abstract_module(lVersionInfo){
@@ -43,6 +43,7 @@ class module_SwcApplFoc:
       );
       FUNC(void, SWCAPPLFOC_CODE) DeInitFunction (void);
       FUNC(void, SWCAPPLFOC_CODE) MainFunction   (void);
+      SWCAPPLFOC_CORE_FUNCTIONALITIES
 };
 
 extern VAR(module_SwcApplFoc, SWCAPPLFOC_VAR) SwcApplFoc;
@@ -57,7 +58,6 @@ CONSTP2VAR(infSchMClient, SWCAPPLFOC_VAR, SWCAPPLFOC_CONST) gptrinfSchMClient_Sw
 /******************************************************************************/
 /* PARAMS                                                                     */
 /******************************************************************************/
-//#include "CfgSwcApplFoc.hpp"
 
 /******************************************************************************/
 /* OBJECTS                                                                    */
