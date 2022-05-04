@@ -113,7 +113,7 @@ FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::InitFunction(
             0 //TBD: IdModule
          ,  0 //TBD: IdInstance
          ,  0 //TBD: IdApi
-         ,  0 //TBD: IdError
+         ,  SWCAPPLFOC_E_UNINIT
       );
 #endif
    }
@@ -133,7 +133,7 @@ FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::DeInitFunction(void){
             0 //TBD: IdModule
          ,  0 //TBD: IdInstance
          ,  0 //TBD: IdApi
-         ,  0 //TBD: IdError
+         ,  SWCAPPLFOC_E_UNINIT
       );
 #endif
    }
@@ -152,7 +152,7 @@ FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::MainFunction(void){
             0 //TBD: IdModule
          ,  0 //TBD: IdInstance
          ,  0 //TBD: IdApi
-         ,  0 //TBD: IdError
+         ,  SWCAPPLFOC_E_UNINIT
       );
 #endif
    }
