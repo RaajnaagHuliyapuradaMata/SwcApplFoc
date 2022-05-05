@@ -85,13 +85,11 @@ FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::InitFunction(
    if(E_OK != IsInitDone){
 #endif
       if(NULL_PTR != lptrCfgModule){
-         if(STD_LOW){
-            // check lptrCfgModule for memory faults
+         if(STD_HIGH){
             lptrCfg = lptrCfgModule;
          }
          else{
-            // use PBcfgCanIf as back-up configuration
-//            lptrCfg = &PBcfgSwcApplFoc;
+            lptrCfg = &PBcfgSwcApplFoc;
          }
       }
       else{
