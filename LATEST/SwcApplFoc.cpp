@@ -7,7 +7,7 @@
 /* #INCLUDES                                                                  */
 /******************************************************************************/
 #include "Module.hpp"
-//#include "CfgSwcApplFoc.hpp"
+#include "CfgSwcApplFoc.hpp"
 #include "SwcApplFoc_core.hpp"
 #include "infSwcApplFoc.hpp"
 
@@ -35,6 +35,13 @@ class module_SwcApplFoc:
       public abstract_module
    ,  public class_SwcApplFoc_Functionality
 {
+   private:
+/******************************************************************************/
+/* OBJECTS                                                                    */
+/******************************************************************************/
+            Std_TypeReturn          IsInitDone{E_NOT_OK};
+      const CfgModule_TypeAbstract* lptrCfg{(CfgModule_TypeAbstract*)NULL_PTR};
+
    public:
       module_SwcApplFoc(Std_TypeVersionInfo lVersionInfo) : abstract_module(lVersionInfo){
       }
