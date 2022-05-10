@@ -89,7 +89,10 @@ FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::InitFunction(
    CONSTP2CONST(CfgModule_TypeAbstract, SWCAPPLFOC_CONFIG_DATA, SWCAPPLFOC_APPL_CONST) lptrCfgModule
 ){
 #if(STD_ON == SwcApplFoc_InitCheck)
-   if(E_OK != IsInitDone){
+   if(
+         E_OK
+      != IsInitDone
+   ){
 #endif
       if(NULL_PTR != lptrCfgModule){
          if(STD_HIGH){
@@ -127,7 +130,10 @@ FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::InitFunction(
 
 FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::DeInitFunction(void){
 #if(STD_ON == SwcApplFoc_InitCheck)
-   if(E_OK == IsInitDone){
+   if(
+         E_OK
+      == IsInitDone
+   ){
 #endif
 #if(STD_ON == SwcApplFoc_InitCheck)
       IsInitDone = E_NOT_OK;
@@ -147,7 +153,10 @@ FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::DeInitFunction(void){
 
 FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::MainFunction(void){
 #if(STD_ON == SwcApplFoc_InitCheck)
-   if(E_OK == IsInitDone){
+   if(
+         E_OK
+      == IsInitDone
+   ){
 #endif
 #if(STD_ON == SwcApplFoc_InitCheck)
    }
