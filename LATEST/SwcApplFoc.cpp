@@ -9,7 +9,7 @@
 #include "Module.hpp"
 #include "CfgSwcApplFoc.hpp"
 #include "SwcApplFoc_core.hpp"
-#include "infSwcApplFoc.hpp"
+#include "infSwcApplFoc_Exp.hpp"
 
 /******************************************************************************/
 /* #DEFINES                                                                   */
@@ -32,6 +32,7 @@
 /* TYPEDEFS                                                                   */
 /******************************************************************************/
 class module_SwcApplFoc:
+   INTERFACES_EXPORTED_SWCAPPLFOC
       public abstract_module
    ,  public class_SwcApplFoc_Functionality
 {
