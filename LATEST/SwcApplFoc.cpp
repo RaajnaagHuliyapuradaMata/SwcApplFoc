@@ -32,7 +32,7 @@
 /* TYPEDEFS                                                                   */
 /******************************************************************************/
 class module_SwcApplFoc:
-   INTERFACES_EXPORTED_SWCAPPLFOC
+      INTERFACES_EXPORTED_SWCAPPLFOC
       public abstract_module
    ,  public class_SwcApplFoc_Functionality
 {
