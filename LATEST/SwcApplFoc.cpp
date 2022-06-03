@@ -10,6 +10,7 @@
 #include "CfgSwcApplFoc.hpp"
 #include "SwcApplFoc_core.hpp"
 #include "infSwcApplFoc_Exp.hpp"
+#include "infSwcApplFoc_Imp.hpp"
 
 /******************************************************************************/
 /* #DEFINES                                                                   */
