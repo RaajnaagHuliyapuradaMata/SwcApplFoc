@@ -74,7 +74,7 @@ CONSTP2VAR(infSchMClient, SWCAPPLFOC_VAR, SWCAPPLFOC_CONST) gptrinfSchMClient_Sw
 VAR(module_SwcApplFoc, SWCAPPLFOC_VAR) SwcApplFoc(
    {
 #if(STD_ON == _ReSIM)
-// char strModuleName[6];
+   char strModuleName[6] = "ARA1";
 #else
 #endif
          SWCAPPLFOC_AR_RELEASE_VERSION_MAJOR
