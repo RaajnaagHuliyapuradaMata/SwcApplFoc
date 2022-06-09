@@ -74,10 +74,10 @@ CONSTP2VAR(infSchMClient, SWCAPPLFOC_VAR, SWCAPPLFOC_CONST) gptrinfSchMClient_Sw
 VAR(module_SwcApplFoc, SWCAPPLFOC_VAR) SwcApplFoc(
    {
 #if(STD_ON == _ReSIM)
-         "SwcApplFoc"
+         "SwcApplFoc",
 #else
 #endif
-      ,  SWCAPPLFOC_AR_RELEASE_VERSION_MAJOR
+         SWCAPPLFOC_AR_RELEASE_VERSION_MAJOR
       ,  SWCAPPLFOC_AR_RELEASE_VERSION_MINOR
       ,  0x00
       ,  0xFF
