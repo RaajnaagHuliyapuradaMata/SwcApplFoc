@@ -130,7 +130,9 @@ FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::InitFunction(
 #endif
 }
 
-FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::DeInitFunction(void){
+FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::DeInitFunction(
+   void
+){
 #if(STD_ON == SwcApplFoc_InitCheck)
    if(
          E_OK
@@ -153,7 +155,9 @@ FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::DeInitFunction(void){
 #endif
 }
 
-FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::MainFunction(void){
+FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::MainFunction(
+   void
+){
 #if(STD_ON == SwcApplFoc_InitCheck)
    if(
          E_OK
