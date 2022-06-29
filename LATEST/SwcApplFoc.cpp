@@ -41,12 +41,8 @@ class module_SwcApplFoc:
 /******************************************************************************/
 /* OBJECTS                                                                    */
 /******************************************************************************/
-            Std_TypeReturn          IsInitDone{E_NOT_OK};
-      const CfgModule_TypeAbstract* lptrCfg{(CfgModule_TypeAbstract*)NULL_PTR};
 
    public:
-      module_SwcApplFoc(Std_TypeVersionInfo lVersionInfo) : abstract_module(lVersionInfo){
-      }
       FUNC(void, SWCAPPLFOC_CODE) InitFunction(
          CONSTP2CONST(CfgModule_TypeAbstract, SWCAPPLFOC_CONFIG_DATA, SWCAPPLFOC_APPL_CONST) lptrCfgModule
       );
@@ -71,18 +67,7 @@ CONSTP2VAR(infSchMClient, SWCAPPLFOC_VAR, SWCAPPLFOC_CONST) gptrinfSchMClient_Sw
 /******************************************************************************/
 /* OBJECTS                                                                    */
 /******************************************************************************/
-VAR(module_SwcApplFoc, SWCAPPLFOC_VAR) SwcApplFoc(
-   {
-         SWCAPPLFOC_AR_RELEASE_VERSION_MAJOR
-      ,  SWCAPPLFOC_AR_RELEASE_VERSION_MINOR
-      ,  0x00
-      ,  0xFF
-      ,  0x01
-      ,  '0'
-      ,  '1'
-      ,  '0'
-   }
-);
+VAR(module_SwcApplFoc, SWCAPPLFOC_VAR) SwcApplFoc;
 
 /******************************************************************************/
 /* FUNCTIONS                                                                  */
