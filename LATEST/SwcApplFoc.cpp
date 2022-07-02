@@ -82,12 +82,7 @@ FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::InitFunction(
    ){
 #endif
       if(NULL_PTR != lptrCfgModule){
-         if(STD_HIGH){
-            lptrCfg = lptrCfgModule;
-         }
-         else{
-            lptrCfg = &PBcfgSwcApplFoc;
-         }
+         lptrCfg = lptrCfgModule;
       }
       else{
 #if(STD_ON == SwcApplFoc_DevErrorDetect)
