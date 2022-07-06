@@ -7,9 +7,7 @@
 /* #INCLUDES                                                                  */
 /******************************************************************************/
 #include "Module.hpp"
-#include "CfgSwcApplFoc.hpp"
-#include "SwcApplFoc_core.hpp"
-#include "infSwcApplFoc_Exp.hpp"
+#include "SwcApplFoc.hpp"
 #include "infSwcApplFoc_Imp.hpp"
 
 /******************************************************************************/
@@ -32,26 +30,6 @@
 /******************************************************************************/
 /* TYPEDEFS                                                                   */
 /******************************************************************************/
-class module_SwcApplFoc:
-      INTERFACES_EXPORTED_SWCAPPLFOC
-      public abstract_module
-   ,  public class_SwcApplFoc_Functionality
-{
-   private:
-/******************************************************************************/
-/* OBJECTS                                                                    */
-/******************************************************************************/
-
-   public:
-      FUNC(void, SWCAPPLFOC_CODE) InitFunction(
-         CONSTP2CONST(CfgModule_TypeAbstract, SWCAPPLFOC_CONFIG_DATA, SWCAPPLFOC_APPL_CONST) lptrCfgModule
-      );
-      FUNC(void, SWCAPPLFOC_CODE) DeInitFunction (void);
-      FUNC(void, SWCAPPLFOC_CODE) MainFunction   (void);
-      SWCAPPLFOC_CORE_FUNCTIONALITIES
-};
-
-extern VAR(module_SwcApplFoc, SWCAPPLFOC_VAR) SwcApplFoc;
 
 /******************************************************************************/
 /* CONSTS                                                                     */
