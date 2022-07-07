@@ -8,9 +8,7 @@
 /* #INCLUDES                                                                  */
 /******************************************************************************/
 #include "infSwcApplFoc_EcuM.hpp"
-#include "infSwcApplFoc_Dcm.hpp"
 #include "infSwcApplFoc_Det.hpp"
-#include "infSwcApplFoc_SchM.hpp"
 
 /******************************************************************************/
 /* #DEFINES                                                                   */
