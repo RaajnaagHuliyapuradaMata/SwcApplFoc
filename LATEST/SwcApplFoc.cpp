@@ -48,7 +48,8 @@ VAR(module_SwcApplFoc, SWCAPPLFOC_VAR) SwcApplFoc;
 /* FUNCTIONS                                                                  */
 /******************************************************************************/
 FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::InitFunction(
-   CONSTP2CONST(CfgModule_TypeAbstract, SWCAPPLFOC_CONFIG_DATA, SWCAPPLFOC_APPL_CONST) lptrCfgModule
+      CONSTP2CONST(ConstModule_TypeAbstract, SWCAPPLFOC_CONST,       SWCAPPLFOC_APPL_CONST) lptrConstModule
+   ,  CONSTP2CONST(CfgModule_TypeAbstract,   SWCAPPLFOC_CONFIG_DATA, SWCAPPLFOC_APPL_CONST) lptrCfgModule
 ){
 #if(STD_ON == SwcApplFoc_InitCheck)
    if(
@@ -56,8 +57,12 @@ FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::InitFunction(
       != IsInitDone
    ){
 #endif
-      if(NULL_PTR != lptrCfgModule){
-         lptrCfg = lptrCfgModule;
+      if(
+            (NULL_PTR != lptrConstModule)
+         && (NULL_PTR != lptrCfgModule)
+      ){
+         lptrConst = lptrConstModule;
+         lptrCfg   = lptrCfgModule;
       }
       else{
 #if(STD_ON == SwcApplFoc_DevErrorDetect)

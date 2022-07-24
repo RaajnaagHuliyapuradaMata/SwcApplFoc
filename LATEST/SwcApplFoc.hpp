@@ -7,6 +7,7 @@
 /******************************************************************************/
 /* #INCLUDES                                                                  */
 /******************************************************************************/
+#include "ConstSwcApplFoc.hpp"
 #include "CfgSwcApplFoc.hpp"
 #include "SwcApplFoc_core.hpp"
 #include "infSwcApplFoc_Exp.hpp"
@@ -31,13 +32,15 @@ class module_SwcApplFoc:
 /******************************************************************************/
 /* OBJECTS                                                                    */
 /******************************************************************************/
+      const ConstSwcApplFoc_Type* lptrConst = (ConstSwcApplFoc_Type*)NULL_PTR;
 
    public:
 /******************************************************************************/
 /* FUNCTIONS                                                                  */
 /******************************************************************************/
       FUNC(void, SWCAPPLFOC_CODE) InitFunction(
-         CONSTP2CONST(CfgModule_TypeAbstract, SWCAPPLFOC_CONFIG_DATA, SWCAPPLFOC_APPL_CONST) lptrCfgModule
+            CONSTP2CONST(ConstModule_TypeAbstract, SWCAPPLFOC_CONST,       SWCAPPLFOC_APPL_CONST) lptrConstModule
+         ,  CONSTP2CONST(CfgModule_TypeAbstract,   SWCAPPLFOC_CONFIG_DATA, SWCAPPLFOC_APPL_CONST) lptrCfgModule
       );
       FUNC(void, SWCAPPLFOC_CODE) DeInitFunction (void);
       FUNC(void, SWCAPPLFOC_CODE) MainFunction   (void);
