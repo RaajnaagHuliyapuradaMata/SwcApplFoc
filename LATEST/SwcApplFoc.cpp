@@ -61,7 +61,7 @@ FUNC(void, SWCAPPLFOC_CODE) module_SwcApplFoc::InitFunction(
             (NULL_PTR != lptrConstModule)
          && (NULL_PTR != lptrCfgModule)
       ){
-         lptrConst = lptrConstModule;
+         lptrConst = (const ConstSwcApplFoc_Type*)lptrConstModule;
          lptrCfg   = lptrCfgModule;
       }
       else{
