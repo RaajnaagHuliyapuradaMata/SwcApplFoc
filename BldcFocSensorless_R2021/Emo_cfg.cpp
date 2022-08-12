@@ -1,16 +1,15 @@
-#pragma once
 /******************************************************************************/
-/* File   : ApplSwcFoc.hpp                                                    */
+/* File   : Template.hpp                                                      */
 /* Author : NAGARAJA HM (c) since 1982. All rights reserved.                  */
 /******************************************************************************/
 
 /******************************************************************************/
 /* #INCLUDES                                                                  */
 /******************************************************************************/
-#include "ConstApplSwcFoc.hpp"
-#include "CfgApplSwcFoc.hpp"
-#include "ApplSwcFoc_core.hpp"
-#include "infApplSwcFoc_Exp.hpp"
+#include "types.hpp"
+
+#include "Emo_RAM.hpp"
+#include "foc_defines.hpp"
 
 /******************************************************************************/
 /* #DEFINES                                                                   */
@@ -23,33 +22,38 @@
 /******************************************************************************/
 /* TYPEDEFS                                                                   */
 /******************************************************************************/
-class module_ApplSwcFoc:
-      INTERFACES_EXPORTED_APPLSWCFOC
-      public abstract_module
-   ,  public class_ApplSwcFoc_Functionality
-{
-   private:
-/******************************************************************************/
-/* OBJECTS                                                                    */
-/******************************************************************************/
-      const ConstApplSwcFoc_Type* lptrConst = (ConstApplSwcFoc_Type*)NULL_PTR;
-
-   public:
-/******************************************************************************/
-/* FUNCTIONS                                                                  */
-/******************************************************************************/
-      FUNC(void, APPLSWCFOC_CODE) InitFunction(
-            CONSTP2CONST(ConstModule_TypeAbstract, APPLSWCFOC_CONST,       APPLSWCFOC_APPL_CONST) lptrConstModule
-         ,  CONSTP2CONST(CfgModule_TypeAbstract,   APPLSWCFOC_CONFIG_DATA, APPLSWCFOC_APPL_CONST) lptrCfgModule
-      );
-      FUNC(void, APPLSWCFOC_CODE) DeInitFunction (void);
-      FUNC(void, APPLSWCFOC_CODE) MainFunction   (void);
-      APPLSWCFOC_CORE_FUNCTIONALITIES
-};
 
 /******************************************************************************/
 /* CONSTS                                                                     */
 /******************************************************************************/
+const TEmo_Focpar_Cfg Emo_Focpar_Cfg = {
+      (float)  FOC_R_SHUNT
+   ,  (float)  FOC_NOM_CUR
+   ,  (float)  FOC_PWM_FREQ
+   ,  (float)  FOC_R_PHASE
+   ,  (float) (FOC_L_PHASE)
+   ,  (uint16) FOC_SPEED_KP
+   ,  (uint16) FOC_SPEED_KI
+   ,  (float)  FOC_MAX_POS_REF_CUR
+   ,  (float)  FOC_MAX_NEG_REF_CUR
+   ,  (float)  FOC_MIN_POS_REF_CUR
+   ,  (float)  FOC_MIN_NEG_REF_CUR
+   ,  (float)  FOC_MAX_CUR_SPEED
+   ,  (float)  FOC_MIN_CUR_SPEED
+   ,  (float)  FOC_SPEED_FILT_TIME
+   ,  (float)  FOC_ESTFLUX_FILT_TIME
+   ,  (uint16) 0
+   ,  (uint16) FOC_POLE_PAIRS
+// ,  (float)  FOC_START_VOLT
+   ,  (float)  FOC_START_CUR
+   ,  (float)  FOC_ZERO_VEC_TIME
+   ,  (float)  FOC_END_START_SPEED
+   ,  (float)  FOC_START_ACCEL
+   ,  (uint16) FOC_START_FREQ_ZERO
+   ,  (float)  FOC_SWITCH_ON_SPEED
+   ,  (float)  FOC_CUR_ADJUST
+   ,  (float)  FOC_MAX_SPEED
+};
 
 /******************************************************************************/
 /* PARAMS                                                                     */
@@ -58,7 +62,10 @@ class module_ApplSwcFoc:
 /******************************************************************************/
 /* OBJECTS                                                                    */
 /******************************************************************************/
-extern VAR(module_ApplSwcFoc, APPLSWCFOC_VAR) ApplSwcFoc;
+
+/******************************************************************************/
+/* FUNCTIONS                                                                  */
+/******************************************************************************/
 
 /******************************************************************************/
 /* EOF                                                                        */
