@@ -49,8 +49,8 @@ TEmo_Svm Emo_Svm;
 void Emo_HandleAdc1(void){
   CCU6_SetT13Compare(Emo_Svm.CompT13ValueDown);
   CCU6_SetT13Trigger(0x76);
-  Emo_AdcResult[0u] = ADC1->RES_OUT1.reg;
-  ADC1->IE.bit.ESM_IE = 0;
+  Emo_AdcResult[0u] = ADC1.RES_OUT1.reg;
+  ADC1.IE.bit.ESM_IE = 0;
 }
 
 void Emo_CurrAdc1(void){
@@ -127,7 +127,7 @@ void Emo_HandleCCU6ShadowTrans(void){
   CCU6_EnableST_T12();
   CCU6_SetT13Trigger(0x7a);
   CCU6_SetT13Compare(Emo_Svm.CompT13ValueUp);
-  CCU6->IEN.bit.ENT12PM = 0;
+  CCU6.IEN.bit.ENT12PM = 0;
 }
 
 void Emo_HandleFoc(void){
@@ -139,9 +139,9 @@ void Emo_HandleFoc(void){
   sint16 Speed;
   sint32 jj;
   Emo_AdcResult[2u] = Emo_AdcResult[0u];
-  ADC1->ICLR.bit.ESM_ICLR = 1;
-  ADC1->IE.bit.ESM_IE = 1;
-  Emo_AdcResult[1u] = ADC1->RES_OUT1.reg;
+  ADC1.ICLR.bit.ESM_ICLR = 1;
+  ADC1.IE.bit.ESM_IE = 1;
+  Emo_AdcResult[1u] = ADC1.RES_OUT1.reg;
   CCU6_LoadShadowRegister_CC60(Emo_Svm.comp60down);
   CCU6_LoadShadowRegister_CC61(Emo_Svm.comp61down);
   CCU6_LoadShadowRegister_CC62(Emo_Svm.comp62down);
@@ -631,8 +631,8 @@ void Emo_lExeSvm(TEmo_Svm *pSvm){
   pSvm->comp60down = Compare0down;
   pSvm->comp61down = Compare1down;
   pSvm->comp62down = Compare2down;
-  if(CCU6->TCTR0.bit.CDIR == 0){
-    CCU6->IEN.bit.ENT12PM = 1;
+  if(CCU6.TCTR0.bit.CDIR == 0){
+    CCU6.IEN.bit.ENT12PM = 1;
   }
   else{
     CCU6_LoadShadowRegister_CC60(Emo_Svm.comp60up);

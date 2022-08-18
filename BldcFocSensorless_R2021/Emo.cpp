@@ -155,13 +155,13 @@ void Emo_lInitFocPar(void){
 
    KI = 5.0 * 2.0 / (Emo_Focpar_Cfg.Rshunt * OpGain);
    KUZ = 32768.0 * 12.0 / 1612.0;
-   CSA->CTRL.bit.VZERO = 0;
+   CSA.CTRL.bit.VZERO = 0;
    ADC1_SetMode(SW_MODE);
    while(true == ADC1_Busy()){}
    ADC1_SetSocSwMode(ADC1_CH1);
    while(false == ADC1_GetEocSwMode()){}
-   while(0 == ADC1->RES_OUT1.bit.VF1){}
-   CSA_Offset = ADC1->RES_OUT1.bit.OUT_CH1;
+   while(0 == ADC1.RES_OUT1.bit.VF1){}
+   CSA_Offset = ADC1.RES_OUT1.bit.OUT_CH1;
    ADC1_SetMode(SEQ_MODE);
    while(false == ADC1_Busy()){}
    i = CSA_Offset;
@@ -503,7 +503,7 @@ void Emo_HandleT2Overflow(void){
       Emo_Ctrl.ActSpeed = Mat_ExeLp_without_min_max(&Emo_Ctrl.SpeedLp, 0);
       Emo_Ctrl.ActSpeeddisplay = Mat_ExeLp_without_min_max(&Emo_Ctrl.SpeedLpdisplay, Emo_Ctrl.ActSpeed);
    }
-   Emo_Foc.DcLinkVoltage = ADC1->RES_OUT6.reg;
+   Emo_Foc.DcLinkVoltage = ADC1.RES_OUT6.reg;
    Emo_Foc.Dcfactor1 = Emo_Foc.Kdcdivident1 / Emo_Foc.DcLinkVoltage;
    Emo_Foc.Dcfactor2 = __SSAT(Mat_FixMulScale(Emo_Foc.DcLinkVoltage, Emo_Foc.Kdcfactor2, 3), MAT_FIX_SAT);
    Emo_Ctrl.ImagCurrPi.IMax = __SSAT(Mat_FixMulScale(Emo_Foc.DcLinkVoltage, Emo_Foc.Kdcfactoriqc, 5), MAT_FIX_SAT);
@@ -526,7 +526,7 @@ void Emo_HandleT2Overflow(void){
 }
 
 void GPT1_T2_Handler(void){
-   GPT12E->T2.reg += GPT12E_T2_TICK;
+   GPT12E.T2.reg += GPT12E_T2_TICK;
    Emo_HandleT2Overflow();
 }
 
