@@ -85,7 +85,10 @@ uint32 Emo_GetSpeed(void){
 */
 uint32 Emo_StartMotor(uint32 EnableBridge){
    UNUSED(EnableBridge);
-   if(Emo_Status.MotorState != EMO_MOTOR_STATE_STOP){
+   if(
+         EMO_MOTOR_STATE_STOP
+      != Emo_Status.MotorState
+   ){
       return EMO_ERROR_MOTOR_NOT_STOPPED;
    }
    CCU6_StartTmr_T12();
@@ -100,10 +103,10 @@ uint32 Emo_StartMotor(uint32 EnableBridge){
 
 uint32 Emo_StopMotor(void){
    if(
-         (Emo_Status.MotorState != EMO_MOTOR_STATE_RUN)
+               (EMO_MOTOR_STATE_RUN   != Emo_Status.MotorState)
       && (
-               (Emo_Status.MotorState != EMO_MOTOR_STATE_START)
-            && (Emo_Status.MotorState != EMO_MOTOR_STATE_FAULT)
+               (EMO_MOTOR_STATE_START != Emo_Status.MotorState)
+            && (EMO_MOTOR_STATE_FAULT != Emo_Status.MotorState)
          )
    ){
       return EMO_ERROR_MOTOR_NOT_STARTED;
