@@ -224,7 +224,6 @@ extern       uint16          speeduserreferenz;
 /******************************************************************************/
 extern void     Emo_HandleAdc1          (void);
 extern void     Emo_HandleFoc           (void);
-extern void     Emo_HandleT2Overflow    (void);
 extern void     Emo_InitFoc             (void);
 extern void     Emo_ExeSvmTest          (TEmo_Svm *pSvm);
 extern void     Emo_EstFluxTest         (void);

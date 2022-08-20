@@ -442,7 +442,7 @@ void Emo_lInitFocVar(void){
    Emo_Svm.CounterOffsetAdw = 0;
    Emo_Svm.CsaOffsetAdwSumme = 0;
 }
-/*
+
 void Emo_HandleT2Overflow(void){
    if(Emo_Status.MotorState == EMO_MOTOR_STATE_START){
       if(Emo_Foc.CountStart == 0){
@@ -532,7 +532,7 @@ void GPT1_T2_Handler(void){
    GPT12E.T2.reg += GPT12E_T2_TICK;
    Emo_HandleT2Overflow();
 }
-
+/*
 uint32 Emo_GetMotorState(void){
    return(uint32)Emo_Status.MotorState;
 }
