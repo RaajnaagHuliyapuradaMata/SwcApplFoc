@@ -444,31 +444,71 @@ void Emo_lInitFocVar(void){
 }
 
 void Emo_HandleT2Overflow(void){
-   if(Emo_Status.MotorState == EMO_MOTOR_STATE_START){
-      if(Emo_Foc.CountStart == 0){
-         if(Emo_Ctrl.RefSpeed > 0){
-            Emo_Foc.StartSpeedSlope = Mat_Ramp(Emo_Foc.StartEndSpeed, Emo_Foc.StartSpeedSlewRate, &Emo_Foc.StartSpeedSlopeMem);
-            Emo_Foc.StartFrequencySlope = __SSAT(Mat_FixMulScale(Emo_Foc.StartSpeedSlope, Emo_Foc.SpeedtoFrequency, 0), MAT_FIX_SAT);
-            if(Emo_Foc.StartSpeedSlope == Emo_Foc.StartEndSpeed){
-#if(EMO_RUN==1)
+   if(
+         EMO_MOTOR_STATE_START
+      == Emo_Status.MotorState
+   ){
+      if(
+            0
+         == Emo_Foc.CountStart
+      ){
+         if(
+               0
+            <  Emo_Ctrl.RefSpeed
+         ){
+            Emo_Foc.StartSpeedSlope = Mat_Ramp(
+                  Emo_Foc.StartEndSpeed
+               ,  Emo_Foc.StartSpeedSlewRate
+               , &Emo_Foc.StartSpeedSlopeMem
+            );
+
+            Emo_Foc.StartFrequencySlope = __SSAT(
+                  Mat_FixMulScale(
+                        Emo_Foc.StartSpeedSlope
+                     ,  Emo_Foc.SpeedtoFrequency
+                     ,  0
+                  )
+               ,  MAT_FIX_SAT
+            );
+
+            if(
+                  Emo_Foc.StartSpeedSlope
+               == Emo_Foc.StartEndSpeed
+            ){
                Emo_Status.MotorState = EMO_MOTOR_STATE_RUN;
-#endif
                Emo_Ctrl.SpeedPi.IOut = Emo_Ctrl.RefCurr << 14;
             }
          }
          else{
-            Emo_Foc.StartSpeedSlope = Mat_Ramp(-Emo_Foc.StartEndSpeed, Emo_Foc.StartSpeedSlewRate, &Emo_Foc.StartSpeedSlopeMem);
-            Emo_Foc.StartFrequencySlope = __SSAT(Mat_FixMulScale(Emo_Foc.StartSpeedSlope, Emo_Foc.SpeedtoFrequency, 0), MAT_FIX_SAT);
-            if(Emo_Foc.StartSpeedSlope == -Emo_Foc.StartEndSpeed){
-#if(EMO_RUN==1)
+            Emo_Foc.StartSpeedSlope = Mat_Ramp(
+                 -Emo_Foc.StartEndSpeed
+               ,  Emo_Foc.StartSpeedSlewRate
+               , &Emo_Foc.StartSpeedSlopeMem
+            );
+
+            Emo_Foc.StartFrequencySlope = __SSAT(
+                  Mat_FixMulScale(
+                        Emo_Foc.StartSpeedSlope
+                     ,  Emo_Foc.SpeedtoFrequency
+                     ,  0
+                  )
+               ,  MAT_FIX_SAT
+            );
+
+            if(
+                   Emo_Foc.StartSpeedSlope
+               == -Emo_Foc.StartEndSpeed
+            ){
                Emo_Status.MotorState = EMO_MOTOR_STATE_RUN;
-#endif
                Emo_Ctrl.SpeedPi.IOut = Emo_Ctrl.RefCurr << 14;
             }
          }
       }
       else{
-         if(Emo_Focpar_Cfg.EnableFrZero == 1){
+         if(
+               1
+            == Emo_Focpar_Cfg.EnableFrZero
+         ){
             Emo_Foc.CountStart--;
          }
          else{
@@ -476,49 +516,98 @@ void Emo_HandleT2Overflow(void){
          }
          Emo_Foc.StartFrequencySlope = 0;
       }
-      Emo_Ctrl.ActSpeeddisplay = Mat_ExeLp_without_min_max(&Emo_Ctrl.SpeedLpdisplay, Emo_Ctrl.ActSpeed);
+
+      Emo_Ctrl.ActSpeeddisplay = Mat_ExeLp_without_min_max(
+           &Emo_Ctrl.SpeedLpdisplay
+         ,  Emo_Ctrl.ActSpeed
+      );
+
       Emo_Ctrl.EnableStartVoltage = 1;
    }
-   else if(Emo_Status.MotorState == EMO_MOTOR_STATE_RUN){
-      if(Emo_Ctrl.ActSpeed > Emo_Ctrl.Speedlevelmaxstart){
+   else if(
+         EMO_MOTOR_STATE_RUN
+      == Emo_Status.MotorState
+   ){
+      if(
+            Emo_Ctrl.ActSpeed
+         >  Emo_Ctrl.Speedlevelmaxstart
+      ){
          Emo_Ctrl.SpeedPi.PiMax = Emo_Ctrl.MaxRefCurrent;
-         Emo_Ctrl.SpeedPi.IMax = Emo_Ctrl.MaxRefCurrent;
+         Emo_Ctrl.SpeedPi.IMax  = Emo_Ctrl.MaxRefCurrent;
       }
       else{
-         if(Emo_Ctrl.ActSpeed < Emo_Ctrl.Speedlevelminstart){
+         if(
+               Emo_Ctrl.ActSpeed
+            <  Emo_Ctrl.Speedlevelminstart
+         ){
             Emo_Ctrl.SpeedPi.PiMin = Emo_Ctrl.MinRefCurrent;
-            Emo_Ctrl.SpeedPi.IMin = Emo_Ctrl.MinRefCurrent;
+            Emo_Ctrl.SpeedPi.IMin  = Emo_Ctrl.MinRefCurrent;
          }
          else{
             Emo_Ctrl.SpeedPi.PiMax = Emo_Ctrl.MaxRefStartCurrent;
-            Emo_Ctrl.SpeedPi.IMax = Emo_Ctrl.MaxRefStartCurrent;
+            Emo_Ctrl.SpeedPi.IMax  = Emo_Ctrl.MaxRefStartCurrent;
             Emo_Ctrl.SpeedPi.PiMin = Emo_Ctrl.MinRefStartCurrent;
-            Emo_Ctrl.SpeedPi.IMin = Emo_Ctrl.MinRefStartCurrent;
+            Emo_Ctrl.SpeedPi.IMin  = Emo_Ctrl.MinRefStartCurrent;
          }
       }
-      Emo_Ctrl.RefCurr = Mat_ExePi(&Emo_Ctrl.SpeedPi, Emo_Ctrl.RefSpeed - Emo_Ctrl.ActSpeed);
-      Emo_Ctrl.ActSpeeddisplay = Mat_ExeLp_without_min_max(&Emo_Ctrl.SpeedLpdisplay, Emo_Ctrl.ActSpeed);
+      Emo_Ctrl.RefCurr = Mat_ExePi(
+           &Emo_Ctrl.SpeedPi
+         ,  Emo_Ctrl.RefSpeed - Emo_Ctrl.ActSpeed
+      );
+
+      Emo_Ctrl.ActSpeeddisplay = Mat_ExeLp_without_min_max(
+           &Emo_Ctrl.SpeedLpdisplay
+         ,  Emo_Ctrl.ActSpeed
+      );
    }
    else{
       Emo_StopMotor();
    }
-   if(Emo_Status.MotorState == EMO_MOTOR_STATE_STOP){
-      Emo_Ctrl.ActSpeed = Mat_ExeLp_without_min_max(&Emo_Ctrl.SpeedLp, 0);
-      Emo_Ctrl.ActSpeeddisplay = Mat_ExeLp_without_min_max(&Emo_Ctrl.SpeedLpdisplay, Emo_Ctrl.ActSpeed);
+
+   if(
+         EMO_MOTOR_STATE_STOP
+      == Emo_Status.MotorState
+   ){
+      Emo_Ctrl.ActSpeed = Mat_ExeLp_without_min_max(
+           &Emo_Ctrl.SpeedLp
+         ,  0
+      );
+
+      Emo_Ctrl.ActSpeeddisplay = Mat_ExeLp_without_min_max(
+           &Emo_Ctrl.SpeedLpdisplay
+         ,  Emo_Ctrl.ActSpeed
+      );
    }
-   Emo_Foc.DcLinkVoltage = ADC1.RES_OUT6.reg;
-   Emo_Foc.Dcfactor1 = Emo_Foc.Kdcdivident1 / Emo_Foc.DcLinkVoltage;
-   Emo_Foc.Dcfactor2 = __SSAT(Mat_FixMulScale(Emo_Foc.DcLinkVoltage, Emo_Foc.Kdcfactor2, 3), MAT_FIX_SAT);
-   Emo_Ctrl.ImagCurrPi.IMax = __SSAT(Mat_FixMulScale(Emo_Foc.DcLinkVoltage, Emo_Foc.Kdcfactoriqc, 5), MAT_FIX_SAT);
+
+   Emo_Foc.DcLinkVoltage     = ADC1.RES_OUT6.reg;
+   Emo_Foc.Dcfactor1         = Emo_Foc.Kdcdivident1 / Emo_Foc.DcLinkVoltage;
+   Emo_Foc.Dcfactor2         = __SSAT(Mat_FixMulScale(Emo_Foc.DcLinkVoltage, Emo_Foc.Kdcfactor2,   3), MAT_FIX_SAT);
+   Emo_Ctrl.ImagCurrPi.IMax  = __SSAT(Mat_FixMulScale(Emo_Foc.DcLinkVoltage, Emo_Foc.Kdcfactoriqc, 5), MAT_FIX_SAT);
    Emo_Ctrl.ImagCurrPi.PiMax = Emo_Ctrl.ImagCurrPi.IMax;
-   Emo_Ctrl.ImagCurrPi.IMin = -Emo_Ctrl.ImagCurrPi.IMax;
+   Emo_Ctrl.ImagCurrPi.IMin  = -Emo_Ctrl.ImagCurrPi.IMax;
    Emo_Ctrl.ImagCurrPi.PiMin = Emo_Ctrl.ImagCurrPi.IMin;
-   if(Emo_Ctrl.EnableStartVoltage == 1){
-      Emo_Foc.StartVoltAmpDivUz = __SSAT(Mat_FixMulScale(Emo_Foc.StartVoltAmp, Emo_Foc.Dcfactor1, 1), MAT_FIX_SAT);
+
+   if(
+         1
+      == Emo_Ctrl.EnableStartVoltage
+   ){
+      Emo_Foc.StartVoltAmpDivUz = __SSAT(
+            Mat_FixMulScale(
+                  Emo_Foc.StartVoltAmp
+               ,  Emo_Foc.Dcfactor1
+               ,  1
+            )
+         ,  MAT_FIX_SAT
+      );
    }
+
    Emo_Ctrl.SpeedPi.IMin = Emo_Ctrl.SpeedPi.PiMin;
    Emo_Ctrl.SpeedPi.IMax = Emo_Ctrl.SpeedPi.PiMax;
-   if(Emo_Svm.Amp < Emo_Svm.MaxAmp9091pr){
+
+   if(
+         Emo_Svm.Amp
+      <  Emo_Svm.MaxAmp9091pr
+   ){
       Emo_Foc.RealFluxLp.CoefB = Emo_Foc.LpCoefb1;
       Emo_Foc.ImagFluxLp.CoefB = Emo_Foc.LpCoefb1;
    }
