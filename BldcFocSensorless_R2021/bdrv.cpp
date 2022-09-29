@@ -23,7 +23,6 @@
 /******************************************************************************/
 #define SCUPM_BDRV_ISCLR_Pos (0UL)
 #define SCUPM_BDRV_ISCLR_Msk (0xFFFFFFFFUL)
-
 #define BDRV_CTRL1_LS1_Cfg_Pos BDRV_CTRL1_LS1_EN_Pos
 #define BDRV_CTRL1_LS2_Cfg_Pos BDRV_CTRL1_LS2_EN_Pos
 #define BDRV_CTRL1_HS1_Cfg_Pos BDRV_CTRL1_HS1_EN_Pos
@@ -92,6 +91,7 @@ void BDRV_Init(void){
 #endif
 }
 
+#if(UC_SERIES == TLE987)
 void BDRV_Set_Bridge(
       TBdrv_Ch_Cfg LS1_Cfg
    ,  TBdrv_Ch_Cfg HS1_Cfg
@@ -107,6 +107,8 @@ void BDRV_Set_Bridge(
   Field_Mod32(&BDRV.CTRL2.reg, BDRV_CTRL2_LS3_Cfg_Pos, BDRV_CTRL2_LS3_Cfg_Msk, (uint32)LS3_Cfg);
   Field_Mod32(&BDRV.CTRL2.reg, BDRV_CTRL2_HS3_Cfg_Pos, BDRV_CTRL2_HS3_Cfg_Msk, (uint32)HS3_Cfg);
 }
+#else
+#endif
 
 void BDRV_Clr_Sts(uint32 Sts_Bit){
   Field_Wrt32(&SCUPM.BDRV_ISCLR.reg, SCUPM_BDRV_ISCLR_Pos, SCUPM_BDRV_ISCLR_Msk, Sts_Bit);
@@ -115,7 +117,6 @@ void BDRV_Clr_Sts(uint32 Sts_Bit){
 /*
 void BDRV_Set_Channel(TBdrv_Ch BDRV_Ch, TBdrv_Ch_Cfg Ch_Cfg){
 #if(UC_SERIES == TLE987)
-
   if(BDRV_Ch < LS3){
     Field_Mod32(&BDRV.CTRL1.reg, ((uint32)BDRV_Ch << 3u), (uint32)0x0F << ((uint32)BDRV_Ch << 3u), (uint32)Ch_Cfg);
   }
@@ -145,7 +146,7 @@ TBDRV_Curr BDRV_getChrgCurrent_mA(void){
   uint8 u8_current;
   u8_range = BDRV.CTRL3.bit.ICHARGEDIV2_N;
   u8_current = BDRV.CTRL3.bit.ICHARGE_TRIM;
-  return(TBDRV_Curr)((u8_range << TBDRV_Curr_RANGE_POS) | u8_current);
+   return(TBDRV_Curr)((u8_range << TBDRV_Curr_RANGE_POS) | u8_current);
 }
 
 void BDRV_setChrgCurrent_mA(TBDRV_Curr BDRV_Current){
@@ -162,7 +163,7 @@ TBDRV_Curr BDRV_getDischrgCurrent_mA(void){
   uint8 u8_current;
   u8_range = BDRV.CTRL3.bit.IDISCHARGEDIV2_N;
   u8_current = BDRV.CTRL3.bit.IDISCHARGE_TRIM;
-  return(TBDRV_Curr)((u8_range << TBDRV_Curr_RANGE_POS) | u8_current);
+   return(TBDRV_Curr)((u8_range << TBDRV_Curr_RANGE_POS) | u8_current);
 }
 
 void BDRV_setDischrgCurrent_mA(TBDRV_Curr BDRV_Current){
@@ -201,7 +202,7 @@ bool BDRV_Diag_OpenLoad(void){
   if(iBDRV_Int_En == (uint8)1){
     NVIC_Node14_En();
   }
-  return(bOpenLoad);
+   return(bOpenLoad);
 }
 #endif
 
@@ -243,7 +244,7 @@ bool BDRV_Diag_OpenLoad(void){
   if(bBDRV_Int_En == (uint8)1){
     NVIC_Node14_En();
   }
-  return(bOpenLoad);
+   return(bOpenLoad);
 }
 #endif
 
@@ -285,7 +286,7 @@ TBDRV_Off_Diag BDRV_Off_Diagnosis(void){
   if(iBDRV_Int_En == (uint8)1){
     NVIC_Node14_En();
   }
-  return(res);
+   return(res);
 }
 #endif
 
@@ -333,7 +334,7 @@ TBDRV_Off_Diag BDRV_Off_Diagnosis(void){
   if(iBDRV_Int_En == (uint8)1){
     NVIC_Node14_En();
   }
-  return(res);
+   return(res);
 }
 #endif
 
@@ -518,67 +519,67 @@ void BDRV_VCP_LO_Int_Dis(void){
 }
 
 uint8 BDRV_HS1_OC_Int_Sts(void){
-  return u1_Field_Rd32(&SCUPM.BDRV_IS.reg, SCUPM_BDRV_IS_HS1_OC_IS_Pos, SCUPM_BDRV_IS_HS1_OC_IS_Msk);
+   return u1_Field_Rd32(&SCUPM.BDRV_IS.reg, SCUPM_BDRV_IS_HS1_OC_IS_Pos, SCUPM_BDRV_IS_HS1_OC_IS_Msk);
 }
 
 uint8 BDRV_LS1_OC_Int_Sts(void){
-  return u1_Field_Rd32(&SCUPM.BDRV_IS.reg, SCUPM_BDRV_IS_LS1_OC_IS_Pos, SCUPM_BDRV_IS_LS1_OC_IS_Msk);
+   return u1_Field_Rd32(&SCUPM.BDRV_IS.reg, SCUPM_BDRV_IS_LS1_OC_IS_Pos, SCUPM_BDRV_IS_LS1_OC_IS_Msk);
 }
 
 uint8 BDRV_HS2_OC_Int_Sts(void){
-  return u1_Field_Rd32(&SCUPM.BDRV_IS.reg, SCUPM_BDRV_IS_HS2_OC_IS_Pos, SCUPM_BDRV_IS_HS2_OC_IS_Msk);
+   return u1_Field_Rd32(&SCUPM.BDRV_IS.reg, SCUPM_BDRV_IS_HS2_OC_IS_Pos, SCUPM_BDRV_IS_HS2_OC_IS_Msk);
 }
 
 uint8 BDRV_LS2_OC_Int_Sts(void){
-  return u1_Field_Rd32(&SCUPM.BDRV_IS.reg, SCUPM_BDRV_IS_LS2_OC_IS_Pos, SCUPM_BDRV_IS_LS2_OC_IS_Msk);
+   return u1_Field_Rd32(&SCUPM.BDRV_IS.reg, SCUPM_BDRV_IS_LS2_OC_IS_Pos, SCUPM_BDRV_IS_LS2_OC_IS_Msk);
 }
 
 #if(UC_SERIES == TLE987)
 uint8 BDRV_HS3_OC_Int_Sts(void){
-  return u1_Field_Rd32(&SCUPM.BDRV_IS.reg, SCUPM_BDRV_IS_HS3_OC_IS_Pos, SCUPM_BDRV_IS_HS3_OC_IS_Msk);
+   return u1_Field_Rd32(&SCUPM.BDRV_IS.reg, SCUPM_BDRV_IS_HS3_OC_IS_Pos, SCUPM_BDRV_IS_HS3_OC_IS_Msk);
 }
 #endif
 
 #if(UC_SERIES == TLE987)
 uint8 BDRV_LS3_OC_Int_Sts(void){
-  return u1_Field_Rd32(&SCUPM.BDRV_IS.reg, SCUPM_BDRV_IS_LS3_OC_IS_Pos, SCUPM_BDRV_IS_LS3_OC_IS_Msk);
+   return u1_Field_Rd32(&SCUPM.BDRV_IS.reg, SCUPM_BDRV_IS_LS3_OC_IS_Pos, SCUPM_BDRV_IS_LS3_OC_IS_Msk);
 }
 #endif
 
 uint8 BDRV_HS1_DS_Int_Sts(void){
-  return u1_Field_Rd32(&SCUPM.BDRV_IS.reg, SCUPM_BDRV_IS_HS1_DS_IS_Pos, SCUPM_BDRV_IS_HS1_DS_IS_Msk);
+   return u1_Field_Rd32(&SCUPM.BDRV_IS.reg, SCUPM_BDRV_IS_HS1_DS_IS_Pos, SCUPM_BDRV_IS_HS1_DS_IS_Msk);
 }
 
 uint8 BDRV_LS1_DS_Int_Sts(void){
-  return u1_Field_Rd32(&SCUPM.BDRV_IS.reg, SCUPM_BDRV_IS_LS1_DS_IS_Pos, SCUPM_BDRV_IS_LS1_DS_IS_Msk);
+   return u1_Field_Rd32(&SCUPM.BDRV_IS.reg, SCUPM_BDRV_IS_LS1_DS_IS_Pos, SCUPM_BDRV_IS_LS1_DS_IS_Msk);
 }
 
 uint8 BDRV_HS2_DS_Int_Sts(void){
-  return u1_Field_Rd32(&SCUPM.BDRV_IS.reg, SCUPM_BDRV_IS_HS2_DS_IS_Pos, SCUPM_BDRV_IS_HS2_DS_IS_Msk);
+   return u1_Field_Rd32(&SCUPM.BDRV_IS.reg, SCUPM_BDRV_IS_HS2_DS_IS_Pos, SCUPM_BDRV_IS_HS2_DS_IS_Msk);
 }
 
 uint8 BDRV_LS2_DS_Int_Sts(void){
-  return u1_Field_Rd32(&SCUPM.BDRV_IS.reg, SCUPM_BDRV_IS_LS2_DS_IS_Pos, SCUPM_BDRV_IS_LS2_DS_IS_Msk);
+   return u1_Field_Rd32(&SCUPM.BDRV_IS.reg, SCUPM_BDRV_IS_LS2_DS_IS_Pos, SCUPM_BDRV_IS_LS2_DS_IS_Msk);
 }
 
 #if(UC_SERIES == TLE987)
 uint8 BDRV_HS3_DS_Int_Sts(void){
-  return u1_Field_Rd32(&SCUPM.BDRV_IS.reg, SCUPM_BDRV_IS_HS3_DS_IS_Pos, SCUPM_BDRV_IS_HS3_DS_IS_Msk);
+   return u1_Field_Rd32(&SCUPM.BDRV_IS.reg, SCUPM_BDRV_IS_HS3_DS_IS_Pos, SCUPM_BDRV_IS_HS3_DS_IS_Msk);
 }
 #endif
 
 #if(UC_SERIES == TLE987)
 uint8 BDRV_LS3_DS_Int_Sts(void){
-  return u1_Field_Rd32(&SCUPM.BDRV_IS.reg, SCUPM_BDRV_IS_LS3_DS_IS_Pos, SCUPM_BDRV_IS_LS3_DS_IS_Msk);
+   return u1_Field_Rd32(&SCUPM.BDRV_IS.reg, SCUPM_BDRV_IS_LS3_DS_IS_Pos, SCUPM_BDRV_IS_LS3_DS_IS_Msk);
 }
 #endif
 
 uint8 BDRV_VCP_LO_Int_Sts(void){
-  return u1_Field_Rd32(&SCUPM.BDRV_IS.reg, SCUPM_BDRV_IS_VCP_LOWTH2_IS_Pos, SCUPM_BDRV_IS_VCP_LOWTH2_IS_Msk);
+   return u1_Field_Rd32(&SCUPM.BDRV_IS.reg, SCUPM_BDRV_IS_VCP_LOWTH2_IS_Pos, SCUPM_BDRV_IS_VCP_LOWTH2_IS_Msk);
 }
 
 uint8 BDRV_getChrgCurrent_dig(void){
-  return BDRV.CTRL3.bit.ICHARGE_TRIM;
+   return BDRV.CTRL3.bit.ICHARGE_TRIM;
 }
 
 void BDRV_setChrgCurrent_dig(uint8 u8_cur_dig){
@@ -586,7 +587,7 @@ void BDRV_setChrgCurrent_dig(uint8 u8_cur_dig){
 }
 
 uint8 BDRV_getChrgCurrentRange_dig(void){
-  return BDRV.CTRL3.bit.ICHARGEDIV2_N;
+   return BDRV.CTRL3.bit.ICHARGEDIV2_N;
 }
 
 void BDRV_setChrgCurrentRange_dig(uint8 u8_cur_range_dig){
@@ -594,7 +595,7 @@ void BDRV_setChrgCurrentRange_dig(uint8 u8_cur_range_dig){
 }
 
 uint8 BDRV_getDischrgCurrent_dig(void){
-  return BDRV.CTRL3.bit.IDISCHARGE_TRIM;
+   return BDRV.CTRL3.bit.IDISCHARGE_TRIM;
 }
 
 void BDRV_setDischrgCurrent_dig(uint8 u8_cur_dig){
@@ -602,7 +603,7 @@ void BDRV_setDischrgCurrent_dig(uint8 u8_cur_dig){
 }
 
 uint8 BDRV_getDischrgCurrentRange_dig(void){
-  return BDRV.CTRL3.bit.IDISCHARGEDIV2_N;
+   return BDRV.CTRL3.bit.IDISCHARGEDIV2_N;
 }
 
 void BDRV_setDischrgCurrentRange_dig(uint8 u8_cur_range_dig){

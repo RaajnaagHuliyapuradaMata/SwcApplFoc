@@ -68,51 +68,43 @@ void Emo_CurrAdc1(void){
   R1miR0 = AdcResult1 - AdcResult0;
   sector = Emo_Svm.StoredSector1;
   switch (sector){
-    case 0:
-    {
+    case 0:{
       Emo_Svm.PhaseCurr.A = R0mioffs;
       Emo_Svm.PhaseCurr.B = R1miR0;
     }
     break;
 
-    case 1:
-    {
+    case 1:{
       Emo_Svm.PhaseCurr.A = R1miR0;
       Emo_Svm.PhaseCurr.B = R0mioffs;
     }
     break;
 
-    case 2:
-    {
+    case 2:{
       Emo_Svm.PhaseCurr.A = OffsmiR1;
       Emo_Svm.PhaseCurr.B = R0mioffs;
     }
     break;
 
-    case 3:
-    {
+    case 3:{
       Emo_Svm.PhaseCurr.A = OffsmiR1;
       Emo_Svm.PhaseCurr.B = R1miR0;
     }
     break;
 
-    case 4:
-    {
+    case 4:{
       Emo_Svm.PhaseCurr.A = R1miR0;
       Emo_Svm.PhaseCurr.B = OffsmiR1;
     }
     break;
 
-    case 5:
-    {
+    case 5:{
       Emo_Svm.PhaseCurr.A = R0mioffs;
       Emo_Svm.PhaseCurr.B = OffsmiR1;
     }
     break;
 
-    default:
-    {
-
+    default:{
       Emo_StopMotor();
     }
     break;
@@ -222,8 +214,7 @@ void Emo_HandleFoc(void){
       if(i < Emo_Svm.CsaOffset){
         i = Emo_Svm.CsaOffset;
       }
-      else
-      {
+      else{
         if(i > (Emo_Svm.CsaOffset + 100)){
           i = Emo_Svm.CsaOffset + 100;
         }
@@ -265,8 +256,7 @@ void Emo_lExeSvm(TEmo_Svm *pSvm){
   pSvm->T2 = (sint16)T2;
   per = CCU6_T12PR;
   switch (Sector){
-    case 0u:
-    {
+    case 0u:{
       ci = ((sint32)CCU6_T12PR / 2u) - T1 - T2;
       if(ci < EMO_SVM_DEADTIME){
         ci = 0;
@@ -298,8 +288,7 @@ void Emo_lExeSvm(TEmo_Svm *pSvm){
         if(i < Compare1down){
           Compare1down = Compare1down - i;
         }
-        else
-        {
+        else{
           Compare1down = 1;
         }
       }
@@ -312,8 +301,7 @@ void Emo_lExeSvm(TEmo_Svm *pSvm){
         if(i < Compare1down){
           Compare1down = Compare1down - i;
         }
-        else
-        {
+        else{
           Compare1down = 1;
         }
       }
@@ -322,8 +310,7 @@ void Emo_lExeSvm(TEmo_Svm *pSvm){
       T13ValueDown = CCU6_T12PR - (Compare1down + Compare2down) / 2;
       break;
     }
-    case 1u:
-    {
+    case 1u:{
       ci = ((sint32)CCU6_T12PR / 2u) - T1 - T2;
       if(ci < EMO_SVM_DEADTIME){
         ci = 0;
@@ -358,8 +345,7 @@ void Emo_lExeSvm(TEmo_Svm *pSvm){
         if(i < Compare0down){
           Compare0down = Compare0down - i;
         }
-        else
-        {
+        else{
           Compare0down = 1;
         }
       }
@@ -372,8 +358,7 @@ void Emo_lExeSvm(TEmo_Svm *pSvm){
         if(i < Compare0down){
           Compare0down = Compare0down - i;
         }
-        else
-        {
+        else{
           Compare0down = 1;
         }
       }
@@ -382,8 +367,7 @@ void Emo_lExeSvm(TEmo_Svm *pSvm){
       T13ValueDown = CCU6_T12PR - (Compare0down + Compare2down) / 2;
       break;
     }
-    case 2u:
-    {
+    case 2u:{
       ci = ((sint32)CCU6_T12PR / 2u) - T1 - T2;
       if(ci < EMO_SVM_DEADTIME){
         ci = 0;
@@ -415,8 +399,7 @@ void Emo_lExeSvm(TEmo_Svm *pSvm){
         if(i < Compare2down){
           Compare2down = Compare2down - i;
         }
-        else
-        {
+        else{
           Compare2down = 1;
         }
       }
@@ -429,8 +412,7 @@ void Emo_lExeSvm(TEmo_Svm *pSvm){
         if(i < Compare2down){
           Compare2down = Compare2down - i;
         }
-        else
-        {
+        else{
           Compare2down = 1;
         }
       }
@@ -439,8 +421,7 @@ void Emo_lExeSvm(TEmo_Svm *pSvm){
       T13ValueDown = CCU6_T12PR - (Compare2down + Compare0down) / 2;
       break;
     }
-    case 3u:
-    {
+    case 3u:{
       ci = ((sint32)CCU6_T12PR / 2u) - T1 - T2;
       if(ci < EMO_SVM_DEADTIME){
         ci = 0;
@@ -475,8 +456,7 @@ void Emo_lExeSvm(TEmo_Svm *pSvm){
         if(i < Compare1down){
           Compare1down = Compare1down - i;
         }
-        else
-        {
+        else{
           Compare1down = 1;
         }
       }
@@ -489,8 +469,7 @@ void Emo_lExeSvm(TEmo_Svm *pSvm){
         if(i < Compare1down){
           Compare1down = Compare1down - i;
         }
-        else
-        {
+        else{
           Compare1down = 1;
         }
       }
@@ -499,8 +478,7 @@ void Emo_lExeSvm(TEmo_Svm *pSvm){
       T13ValueDown = CCU6_T12PR - (Compare1down + Compare0down) / 2;
       break;
     }
-    case 4u:
-    {
+    case 4u:{
       ci = ((sint32)CCU6_T12PR / 2u) - T1 - T2;
       if(ci < EMO_SVM_DEADTIME){
         ci = 0;
@@ -532,8 +510,7 @@ void Emo_lExeSvm(TEmo_Svm *pSvm){
         if(i < Compare0down){
           Compare0down = Compare0down - i;
         }
-        else
-        {
+        else{
           Compare0down = 1;
         }
       }
@@ -546,8 +523,7 @@ void Emo_lExeSvm(TEmo_Svm *pSvm){
         if(i < Compare0down){
           Compare0down = Compare0down - i;
         }
-        else
-        {
+        else{
           Compare0down = 1;
         }
       }
@@ -556,8 +532,7 @@ void Emo_lExeSvm(TEmo_Svm *pSvm){
       T13ValueDown = CCU6_T12PR - (Compare0down + Compare1down) / 2;
       break;
     }
-    default:
-    {
+    default:{
       ci = ((sint32)CCU6_T12PR / 2u) - T1 - T2;
       if(ci < EMO_SVM_DEADTIME){
         ci = 0;
@@ -592,8 +567,7 @@ void Emo_lExeSvm(TEmo_Svm *pSvm){
         if(i < Compare2down){
           Compare2down = Compare2down - i;
         }
-        else
-        {
+        else{
           Compare2down = 1;
         }
       }
@@ -606,8 +580,7 @@ void Emo_lExeSvm(TEmo_Svm *pSvm){
         if(i < Compare2down){
           Compare2down = Compare2down - i;
         }
-        else
-        {
+        else{
           Compare2down = 1;
         }
       }
@@ -699,7 +672,7 @@ TComplex Emo_CurrentDecoupling(void){
   Oml = Mat_FixMulScale(Kentk, Emo_Ctrl.SpeedLpdisplay.Out, 1);
   StatOut.Real = __SSAT(Emo_Foc.RotVoltCurrentcontrol.Real - Mat_FixMulScale(Emo_Foc.RotCurr.Imag, Oml, 1), MAT_FIX_SAT);
   StatOut.Imag = __SSAT(Emo_Foc.RotVoltCurrentcontrol.Imag + Mat_FixMulScale(Emo_Foc.RotCurr.Real, Oml, 1), MAT_FIX_SAT);
-  return StatOut;
+   return StatOut;
 }
 #endif
 
