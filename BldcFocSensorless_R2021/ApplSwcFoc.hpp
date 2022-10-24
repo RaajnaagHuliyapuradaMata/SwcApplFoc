@@ -7,15 +7,12 @@
 /******************************************************************************/
 /* #INCLUDES                                                                  */
 /******************************************************************************/
-//#include "tle_device.hpp"
-//#include "Emo.hpp"
-#include "Mat.hpp"
-//#include "Table.hpp"
-//#include "foc_defines.hpp"
 
 /******************************************************************************/
 /* #DEFINES                                                                   */
 /******************************************************************************/
+#define EMO_CFG_CTRAP_ENABLED                                                (0)
+#define EMO_CFG_FOC_TABLE_SCALE                                    (0.117553711)
 #define EMO_CFG_MON16_ENABLED                                                (1)
 #define EMO_E_DCLINK_CURRENT_FAILURE                                        (0u)
 #define EMO_E_OVER_TEMP_FAILURE                                             (2u)
@@ -45,8 +42,9 @@
 #define EMO_SVM_MINTIME                                                     (80)
 #define EMO_SVM_DEADTIME                                                    (30)
 #define EMO_DECOUPLING                                                      (0u)
-#define FOC_ESTFLUX_FILT_TIME                                    FOC_FLUX_ADJUST
 #define EMO_RUN                                                              (1)
+
+#define FOC_POLE_PAIRS                                                     (0x4)
 
 /******************************************************************************/
 /* MACROS                                                                     */
@@ -55,6 +53,11 @@
 /******************************************************************************/
 /* TYPEDEFS                                                                   */
 /******************************************************************************/
+typedef struct{
+   uint8  MotorState;
+   uint16 MotorStartError;
+}TEmo_Status;
+
 typedef struct{
    sint16 Kp;
    sint16 Ki;
@@ -110,34 +113,6 @@ typedef struct{
    uint16 LpCoefb1;
    uint16 LpCoefb2;
 }TEmo_Foc;
-
-typedef struct{
-   float Rshunt;
-   float NominalCurrent;
-   float PWM_Frequency;
-   float PhaseRes;
-   float PhaseInd;
-   uint16 SpeedPi_Kp;
-   uint16 SpeedPi_Ki;
-   float MaxRefCurr;
-   float MinRefCurr;
-   float MaxRefStartCurr;
-   float MinRefStartCurr;
-   float SpeedLevelPos;
-   float SpeedLevelNeg;
-   float TimeConstantSpeedFilter;
-   float TimeConstantEstFluxFilter;
-   uint16 CsaOffset;
-   uint16 PolePair;
-   float StartCurrent;
-   float TimeSpeedzero;
-   float StartSpeedEnd;
-   float StartSpeedSlewRate;
-   uint16 EnableFrZero;
-   float SpeedLevelSwitchOn;
-   float AdjustmCurrentControl;
-   float MaxSpeed;
-}TEmo_Focpar_Cfg;
 
 typedef struct{
    sint16 RefSpeed;
@@ -212,27 +187,35 @@ typedef struct{
 /******************************************************************************/
 /* OBJECTS                                                                    */
 /******************************************************************************/
-extern       TEmo_Ctrl       Emo_Ctrl;
-extern const TEmo_Focpar_Cfg Emo_Focpar_Cfg;
-extern       TEmo_Foc        Emo_Foc;
-extern       uint32          Emo_AdcResult[4u];
-extern       TEmo_Svm        Emo_Svm;
-extern       uint16          speeduserreferenz;
+extern uint32                                                 Emo_AdcResult[4u];
+extern TEmo_Status                                                   Emo_Status;
+extern TEmo_Ctrl                                                       Emo_Ctrl;
+extern TEmo_Foc                                                         Emo_Foc;
+extern TEmo_Svm                                                         Emo_Svm;
+extern uint16                                                 speeduserreferenz;
 
 /******************************************************************************/
 /* FUNCTIONS                                                                  */
 /******************************************************************************/
-extern void     Emo_HandleAdc1          (void);
-extern void     Emo_HandleFoc           (void);
-extern void     Emo_InitFoc             (void);
-extern void     Emo_ExeSvmTest          (TEmo_Svm *pSvm);
-extern void     Emo_EstFluxTest         (void);
-extern uint16   Emo_CalcAngleAmpTest    (TComplex Stat, uint16 *pAmp);
-extern void     Emo_CalcAngleAmpSvmTest (void);
-extern void     Emo_setspeedreferenz    (uint16 speedreferenz);
-extern TComplex Limitsvektor            (TComplex *inp, TEmo_Svm *par);
-extern TComplex Limitsvektorphase       (TComplex *inp, TEmo_Svm *par);
-extern sint16   abs                     (sint16 inp);
+extern uint32   Emo_Init                                                 (void);
+extern void     Emo_SetRefSpeed                               (sint16 RefSpeed);
+extern uint32   Emo_GetSpeed                                             (void);
+extern uint32   Emo_StartMotor                            (uint32 EnableBridge);
+extern uint32   Emo_StopMotor                                            (void);
+extern void     Emo_lInitFocVar                                          (void);
+extern void     Emo_HandleT2Overflow                                     (void);
+extern uint32   Emo_GetMotorState                                        (void);
+extern void     Emo_HandleAdc1                                           (void);
+extern void     Emo_HandleFoc                                            (void);
+extern void     Emo_InitFoc                                              (void);
+extern void     Emo_ExeSvmTest                                 (TEmo_Svm *pSvm);
+extern void     Emo_EstFluxTest                                          (void);
+extern uint16   Emo_CalcAngleAmpTest              (TComplex Stat, uint16 *pAmp);
+extern void     Emo_CalcAngleAmpSvmTest                                  (void);
+extern void     Emo_setspeedreferenz                     (uint16 speedreferenz);
+extern TComplex Limitsvektor                     (TComplex *inp, TEmo_Svm *par);
+extern TComplex Limitsvektorphase                (TComplex *inp, TEmo_Svm *par);
+extern sint16   abs                                                (sint16 inp);
 
 /******************************************************************************/
 /* EOF                                                                        */

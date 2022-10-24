@@ -1,4 +1,3 @@
-#pragma once
 /******************************************************************************/
 /* File   : Template.hpp                                                      */
 /* Author : NAGARAJA HM (c) since 1982. All rights reserved.                  */
@@ -11,34 +10,7 @@
 /******************************************************************************/
 /* #DEFINES                                                                   */
 /******************************************************************************/
-#define BDRV_XML_VERSION                                                 (20207)
-#define BDRV_CP_CLK                                                       (0xE1)
-#define BDRV_CP_CLK_CTRL                                                (0xCA16)
-#define BDRV_CP_CLK_SRC                                              (0x112A880)
-#define BDRV_CP_CTRL_STS                                             (0xC000001)
-#define BDRV_CTRL1                                                         (0x0)
-#define BDRV_CTRL2                                                         (0x0)
-#define BDRV_CTRL3                                                     (0x25151)
-#define BDRV_EFF_CRG_CURR                                                 (0xAA)
-#define BDRV_EFF_CRG_STEP1_CURR                                           (0x14)
-#define BDRV_EFF_CRG_STEP2_CURR                                           (0x14)
-#define BDRV_EFF_CRG_STEP3_CURR                                           (0x14)
-#define BDRV_EFF_CRG_STEP4_CURR                                           (0x14)
-#define BDRV_EFF_DISCRG_CURR                                              (0xAA)
-#define BDRV_EFF_DISCRG_STEP1_CURR                                        (0x14)
-#define BDRV_EFF_DISCRG_STEP2_CURR                                        (0x14)
-#define BDRV_EFF_DISCRG_STEP3_CURR                                        (0x14)
-#define BDRV_EFF_DISCRG_STEP4_CURR                                        (0x14)
-#define BDRV_HSx_LSx_OC_DIS                                                (0x0)
-#define BDRV_LO_DITH                                                     (209.3)
-#define BDRV_LO_DITH_FREQ                                                 (0xD1)
-#define BDRV_OFF_SEQ_CTRL                                           (0x10101010)
-#define BDRV_ON_SEQ_CTRL                                            (0x10101010)
-#define BDRV_TRIM_DRVx                                                (0xFDFD01)
-#define BDRV_UP_DITH                                                    (243.24)
-#define BDRV_UP_DITH_FREQ                                                 (0xF3)
-#define MF_BEMFC_CTRL_STS                                                  (0x0)
-#define MF_TRIM_BEMFx                                                      (0x4)
+
 /******************************************************************************/
 /* MACROS                                                                     */
 /******************************************************************************/
@@ -46,10 +18,38 @@
 /******************************************************************************/
 /* TYPEDEFS                                                                   */
 /******************************************************************************/
+typedef struct{
+   float  Rshunt;
+   float  NominalCurrent;
+   float  PWM_Frequency;
+   float  PhaseRes;
+   float  PhaseInd;
+   uint16 SpeedPi_Kp;
+   uint16 SpeedPi_Ki;
+   float  MaxRefCurr;
+   float  MinRefCurr;
+   float  MaxRefStartCurr;
+   float  MinRefStartCurr;
+   float  SpeedLevelPos;
+   float  SpeedLevelNeg;
+   float  TimeConstantSpeedFilter;
+   float  TimeConstantEstFluxFilter;
+   uint16 CsaOffset;
+   uint16 PolePair;
+   float  StartCurrent;
+   float  TimeSpeedzero;
+   float  StartSpeedEnd;
+   float  StartSpeedSlewRate;
+   uint16 EnableFrZero;
+   float  SpeedLevelSwitchOn;
+   float  AdjustmCurrentControl;
+   float  MaxSpeed;
+}TEmo_Focpar_Cfg;
 
 /******************************************************************************/
 /* CONSTS                                                                     */
 /******************************************************************************/
+extern const TEmo_Focpar_Cfg                                     Emo_Focpar_Cfg;
 
 /******************************************************************************/
 /* PARAMS                                                                     */
