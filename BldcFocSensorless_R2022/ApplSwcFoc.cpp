@@ -47,6 +47,9 @@ VAR(module_ApplSwcFoc, APPLSWCFOC_VAR) ApplSwcFoc;
 /******************************************************************************/
 /* FUNCTIONS                                                                  */
 /******************************************************************************/
+extern void   BDRV_Init (void); //TBD: use interface headers as per architecture
+extern uint32 Emo_Init  (void); //TBD: use interface headers as per architecture
+
 FUNC(void, APPLSWCFOC_CODE) module_ApplSwcFoc::InitFunction(
       CONSTP2CONST(ConstModule_TypeAbstract, APPLSWCFOC_CONST,       APPLSWCFOC_APPL_CONST) lptrConstModule
    ,  CONSTP2CONST(CfgModule_TypeAbstract,   APPLSWCFOC_CONFIG_DATA, APPLSWCFOC_APPL_CONST) lptrCfgModule
@@ -74,6 +77,8 @@ FUNC(void, APPLSWCFOC_CODE) module_ApplSwcFoc::InitFunction(
          );
 #endif
       }
+      BDRV_Init();
+      Emo_Init();
 #if(STD_ON == ApplSwcFoc_InitCheck)
       IsInitDone = E_OK;
    }
