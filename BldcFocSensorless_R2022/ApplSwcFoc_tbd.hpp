@@ -115,37 +115,37 @@ typedef struct{
 }TEmo_Foc;
 
 typedef struct{
-   sint16 RefSpeed;
-   sint16 ActSpeed;
-   sint16 RefCurr;
-   sint16 ActSpeeddisplay;
-   uint16 SpeedPiInit;
-   TMat_Pi SpeedPi;
-   TMat_Pi RealCurrPi;
-   TMat_Pi ImagCurrPi;
+   sint16         RefSpeed;
+   sint16         ActSpeed;
+   sint16         RefCurr;
+   sint16         ActSpeeddisplay;
+   uint16         SpeedPiInit;
+   TMat_Pi        SpeedPi;
+   TMat_Pi        RealCurrPi;
+   TMat_Pi        ImagCurrPi;
    TMat_Lp_Simple SpeedLp;
-   uint16 AngleBuffer[32];
-   uint16 PtrAngle;
-   sint16 MaxRefCurrent;
-   sint16 MinRefCurrent;
-   sint16 MaxRefStartCurrent;
-   sint16 MinRefStartCurrent;
-   sint16 Speedlevelmaxstart;
-   sint16 Speedlevelminstart;
-   sint16 SpeedLevelSwitchOn;
+   uint16         AngleBuffer[32];
+   uint16         PtrAngle;
+   sint16         MaxRefCurrent;
+   sint16         MinRefCurrent;
+   sint16         MaxRefStartCurrent;
+   sint16         MinRefStartCurrent;
+   sint16         Speedlevelmaxstart;
+   sint16         Speedlevelminstart;
+   sint16         SpeedLevelSwitchOn;
    TMat_Lp_Simple SpeedLpdisplay;
    TMat_Lp_Simple FluxbtrLp;
-   sint16 Speedest;
-   sint16 Speedpll;
-   uint16 FluxAnglePll;
-   uint16 Pllkp;
-   uint16 Anglersptr;
-   uint16 Factorspeed;
-   uint16 Expspeedhigh;
-   uint16 Exppllhigh;
-   uint16 EnableStartVoltage;
+   sint16         Speedest;
+   sint16         Speedpll;
+   uint16         FluxAnglePll;
+   uint16         Pllkp;
+   uint16         Anglersptr;
+   uint16         Factorspeed;
+   uint16         Expspeedhigh;
+   uint16         Exppllhigh;
+   uint16         EnableStartVoltage;
    TMat_Lp_Simple RotCurrImagLpdisplay;
-   sint16 RotCurrImagdisplay;
+   sint16         RotCurrImagdisplay;
 }TEmo_Ctrl;
 
 typedef struct{
@@ -187,7 +187,6 @@ typedef struct{
 /******************************************************************************/
 /* OBJECTS                                                                    */
 /******************************************************************************/
-extern uint32                                                 Emo_AdcResult[4u];
 extern TEmo_Status                                                   Emo_Status;
 extern TEmo_Ctrl                                                       Emo_Ctrl;
 extern TEmo_Foc                                                         Emo_Foc;
@@ -198,8 +197,6 @@ extern uint16                                                 speeduserreferenz;
 /* FUNCTIONS                                                                  */
 /******************************************************************************/
 extern uint32   Emo_Init                                                 (void);
-extern void     Emo_SetRefSpeed                               (sint16 RefSpeed);
-extern uint32   Emo_GetSpeed                                             (void);
 extern uint32   Emo_StartMotor                            (uint32 EnableBridge);
 extern uint32   Emo_StopMotor                                            (void);
 extern void     Emo_lInitFocVar                                          (void);
@@ -215,7 +212,6 @@ extern void     Emo_CalcAngleAmpSvmTest                                  (void);
 extern void     Emo_setspeedreferenz                     (uint16 speedreferenz);
 extern TComplex Limitsvektor                     (TComplex *inp, TEmo_Svm *par);
 extern TComplex Limitsvektorphase                (TComplex *inp, TEmo_Svm *par);
-extern sint16   abs                                                (sint16 inp);
 
 /******************************************************************************/
 /* EOF                                                                        */
