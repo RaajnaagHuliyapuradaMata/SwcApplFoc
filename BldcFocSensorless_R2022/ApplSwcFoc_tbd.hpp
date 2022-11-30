@@ -149,31 +149,30 @@ typedef struct{
 }TEmo_Ctrl;
 
 typedef struct{
-   uint16 Angle;
-   uint16 Amp;
-   uint16 Sector;
-   uint16 comp60up;
-   uint16 T1;
-   uint16 comp61up;
-   uint16 T2;
-   uint16 comp62up;
-   TPhaseCurr PhaseCurr;
-   uint16 CsaOffset;
-   uint16 MaxAmp;
-   uint16 MaxAmp9091pr;
-   uint16 MaxAmp4164pr;
-   uint16 Kfact256;
-   uint32 MaxAmpQuadrat;
-   uint16 CompT13ValueUp;
-   uint16 CompT13ValueDown;
-   uint16 T13Trigger;
-   uint16 comp60down;
-   uint16 comp61down;
-   uint16 comp62down;
-   uint16 StoredSector1;
-   uint16 CounterOffsetAdw;
-   uint32 CsaOffsetAdwSumme;
-   uint16 CsaOffsetAdw;
+   uint16     Angle;
+   uint16     Amp;
+   uint16     Sector;
+   uint16     comp60up;
+   uint16     T1;
+   uint16     comp61up;
+   uint16     T2;
+   uint16     comp62up;
+   uint16     CsaOffset;
+   uint16     MaxAmp;
+   uint16     MaxAmp9091pr;
+   uint16     MaxAmp4164pr;
+   uint16     Kfact256;
+   uint32     MaxAmpQuadrat;
+   uint16     CompT13ValueUp;
+   uint16     CompT13ValueDown;
+   uint16     T13Trigger;
+   uint16     comp60down;
+   uint16     comp61down;
+   uint16     comp62down;
+   uint16     StoredSector1;
+   uint16     CounterOffsetAdw;
+   uint32     CsaOffsetAdwSumme;
+   uint16     CsaOffsetAdw;
 }TEmo_Svm;
 
 /******************************************************************************/

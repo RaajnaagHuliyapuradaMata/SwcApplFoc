@@ -376,8 +376,6 @@ void Emo_lInitFocVar(void){
    Emo_Svm.Sector             = 0u;
    Emo_Svm.T1                 = 0u;
    Emo_Svm.T2                 = 0u;
-   Emo_Svm.PhaseCurr.A        = 0;
-   Emo_Svm.PhaseCurr.B        = 0;
    Emo_Svm.comp60up           = 0;
    Emo_Svm.comp61up           = 0;
    Emo_Svm.comp62up           = 0;
@@ -609,6 +607,7 @@ void Emo_HandleAdc1(void){
   Emo_AdcResult[0u] = Emo_HandleAdc1_Adc1();
 }
 
+#include "infProjectARA_Exp.hpp" //TBD: move to destination module specific Rte interface
 void Emo_CurrAdc1(void){
    sint16 AdcResult0 = Emo_AdcResult[2u] & 0x0FFFu;
    sint16 AdcResult1 = Emo_AdcResult[1u] & 0x0FFFu;
@@ -619,12 +618,12 @@ void Emo_CurrAdc1(void){
    Emo_AdcResult[3u] = AdcResult0 + AdcResult1;
 
    switch (Emo_Svm.StoredSector1){
-    case 0: Emo_Svm.PhaseCurr.A = R0mioffs; Emo_Svm.PhaseCurr.B = R1miR0;   break;
-    case 1: Emo_Svm.PhaseCurr.A = R1miR0;   Emo_Svm.PhaseCurr.B = R0mioffs; break;
-    case 2: Emo_Svm.PhaseCurr.A = OffsmiR1; Emo_Svm.PhaseCurr.B = R0mioffs; break;
-    case 3: Emo_Svm.PhaseCurr.A = OffsmiR1; Emo_Svm.PhaseCurr.B = R1miR0;   break;
-    case 4: Emo_Svm.PhaseCurr.A = R1miR0;   Emo_Svm.PhaseCurr.B = OffsmiR1; break;
-    case 5: Emo_Svm.PhaseCurr.A = R0mioffs; Emo_Svm.PhaseCurr.B = OffsmiR1; break;
+    case 0: Rte_Buffer.PhaseCurr.A = R0mioffs; Rte_Buffer.PhaseCurr.B = R1miR0;   break;
+    case 1: Rte_Buffer.PhaseCurr.A = R1miR0;   Rte_Buffer.PhaseCurr.B = R0mioffs; break;
+    case 2: Rte_Buffer.PhaseCurr.A = OffsmiR1; Rte_Buffer.PhaseCurr.B = R0mioffs; break;
+    case 3: Rte_Buffer.PhaseCurr.A = OffsmiR1; Rte_Buffer.PhaseCurr.B = R1miR0;   break;
+    case 4: Rte_Buffer.PhaseCurr.A = R1miR0;   Rte_Buffer.PhaseCurr.B = OffsmiR1; break;
+    case 5: Rte_Buffer.PhaseCurr.A = R0mioffs; Rte_Buffer.PhaseCurr.B = OffsmiR1; break;
     default: Emo_StopMotor(); break;
    }
    Emo_Svm.StoredSector1 = Emo_Svm.Sector;
@@ -1080,6 +1079,30 @@ void Emo_lExeSvm(TEmo_Svm *pSvm){
    }
 }
 
+extern TComplex Mat_Clarke(
+   TPhaseCurr input
+);
+
+TComplex Mat_Clarke(
+   TPhaseCurr input
+){
+   TComplex StatCurr = {0, 0};
+   StatCurr.Real     = __SSAT(
+         4 * input.A
+      ,  MAT_FIX_SAT
+   );
+   StatCurr.Imag = (sint16)__SSAT(
+         Mat_FixMulScale(
+               MAT_ONE_OVER_SQRT_3
+            ,          ((sint32)input.A)
+               +  (2 * ((sint32)input.B))
+            ,  2
+         )
+      ,  MAT_FIX_SAT
+   );
+   return StatCurr;
+}
+
 extern void   Emo_HandleFoc_Adc1_1 (void);
 extern uint32 Emo_HandleFoc_Adc1_2 (void);
 void Emo_HandleFoc(void){
@@ -1099,7 +1122,7 @@ void Emo_HandleFoc(void){
    CCU6_LoadShadowRegister_CC62(Emo_Svm.comp62down);
    CCU6_EnableST_T12();
    Emo_CurrAdc1();
-   Emo_Foc.StatCurr = Mat_Clarke(Emo_Svm.PhaseCurr);
+   Emo_Foc.StatCurr = Mat_Clarke(Rte_Buffer.PhaseCurr);
    Emo_Foc.RotCurr  = Mat_Park(Emo_Foc.StatCurr, Emo_Foc.Angle);
    Emo_lEstFlux();
    if(Emo_Status.MotorState == EMO_MOTOR_STATE_START){
