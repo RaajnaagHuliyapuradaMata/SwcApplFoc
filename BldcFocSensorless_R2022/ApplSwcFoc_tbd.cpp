@@ -14,11 +14,13 @@
 
 #include "bdrv.hpp"
 #include "adc1.hpp"
+
 #include "ccu6.hpp"
+#include "ccu6_defines.hpp"
+
 #include "csa.hpp"
 #include "gpt12e.hpp"
 
-#include "ccu6_defines.hpp"
 #include "gpt12e_defines.hpp"
 #include "scu_defines.hpp"
 
@@ -54,8 +56,6 @@ TEmo_Ctrl   Emo_Ctrl;
 TEmo_Foc    Emo_Foc;
 TEmo_Svm    Emo_Svm;
 uint16      CSA_Offset;
-
-static uint32 Emo_AdcResult[4u];
 
 /******************************************************************************/
 /* FUNCTIONS                                                                  */
@@ -600,35 +600,6 @@ uint32 Emo_GetMotorState(void){
 }
 */
 
-extern uint32 Emo_HandleAdc1_Adc1(void);
-void Emo_HandleAdc1(void){
-  CCU6_SetT13Compare(Emo_Svm.CompT13ValueDown);
-  CCU6_SetT13Trigger(0x76);
-  Emo_AdcResult[0u] = Emo_HandleAdc1_Adc1();
-}
-
-#include "infProjectARA_Exp.hpp" //TBD: move to destination module specific Rte interface
-void Emo_CurrAdc1(void){
-   sint16 AdcResult0 = Emo_AdcResult[2u] & 0x0FFFu;
-   sint16 AdcResult1 = Emo_AdcResult[1u] & 0x0FFFu;
-   sint16 R1miR0     = AdcResult1 - AdcResult0;
-   sint16 R0mioffs   = AdcResult0 - Emo_Svm.CsaOffsetAdw;
-   sint16 OffsmiR1   = Emo_Svm.CsaOffsetAdw - AdcResult1;
-
-   Emo_AdcResult[3u] = AdcResult0 + AdcResult1;
-
-   switch (Emo_Svm.StoredSector1){
-    case 0: Rte_Buffer.PhaseCurr.A = R0mioffs; Rte_Buffer.PhaseCurr.B = R1miR0;   break;
-    case 1: Rte_Buffer.PhaseCurr.A = R1miR0;   Rte_Buffer.PhaseCurr.B = R0mioffs; break;
-    case 2: Rte_Buffer.PhaseCurr.A = OffsmiR1; Rte_Buffer.PhaseCurr.B = R0mioffs; break;
-    case 3: Rte_Buffer.PhaseCurr.A = OffsmiR1; Rte_Buffer.PhaseCurr.B = R1miR0;   break;
-    case 4: Rte_Buffer.PhaseCurr.A = R1miR0;   Rte_Buffer.PhaseCurr.B = OffsmiR1; break;
-    case 5: Rte_Buffer.PhaseCurr.A = R0mioffs; Rte_Buffer.PhaseCurr.B = OffsmiR1; break;
-    default: Emo_StopMotor(); break;
-   }
-   Emo_Svm.StoredSector1 = Emo_Svm.Sector;
-}
-
 /*
 void Emo_HandleCCU6ShadowTrans(void){
   CCU6_LoadShadowRegister_CC60(Emo_Svm.comp60up);
@@ -641,7 +612,10 @@ void Emo_HandleCCU6ShadowTrans(void){
 }
 */
 
-static sint16 Emo_lEstFlux_Optimize(sint16 Input, sint16 Limit){
+static sint16 Emo_lEstFlux_Optimize(
+      sint16 Input
+   ,  sint16 Limit
+){
    sint16 Output;
 
    if(Input > Limit){
@@ -716,7 +690,7 @@ void Emo_lExeSvm(TEmo_Svm *pSvm){
    T2 = (((uint32)pSvm->Amp) * Table_Sin60[Index]) >> (MAT_FIX_SHIFT + 1);
    pSvm->T2 = (sint16)T2;
    per = CCU6_T12PR;
-   switch (Sector){
+   switch(Sector){
     case 0u:{
       ci = ((sint32)CCU6_T12PR / 2u) - T1 - T2;
       if(ci < EMO_SVM_DEADTIME){
@@ -1079,51 +1053,87 @@ void Emo_lExeSvm(TEmo_Svm *pSvm){
    }
 }
 
-extern TComplex Mat_Clarke(
-   TPhaseCurr input
+extern void Emo_HandleCcu6(
+      uint16 lu16CompT13ValueDown
+   ,  uint16 lu16Comp60down
+   ,  uint16 lu16Comp61down
+   ,  uint16 lu16Comp62down
 );
+extern void   Emo_HandleAdc1   (void);
+extern void   Emo_HandleIoHwAb (void);
+extern uint32 RteRead_Adc2     (void);
 
+#include "infProjectARA_Exp.hpp" //TBD: move to destination module specific Rte interface
+extern void RteWrite_PhaseCurr(  //TBD: move to destination module specific Rte interface
+   TPhaseCurr* lptrInput
+);
+#include "Mat.hpp"
+extern uint32 Emo_StopMotor(void);
 TComplex Mat_Clarke(
-   TPhaseCurr input
+   TPhaseCurr* lptrInput
 ){
    TComplex StatCurr = {0, 0};
    StatCurr.Real     = __SSAT(
-         4 * input.A
+         4 * lptrInput->A
       ,  MAT_FIX_SAT
    );
    StatCurr.Imag = (sint16)__SSAT(
          Mat_FixMulScale(
                MAT_ONE_OVER_SQRT_3
-            ,          ((sint32)input.A)
-               +  (2 * ((sint32)input.B))
+            ,          ((sint32)lptrInput->A)
+               +  (2 * ((sint32)lptrInput->B))
             ,  2
          )
       ,  MAT_FIX_SAT
    );
    return StatCurr;
 }
+extern void RteRead_AdcResult(  //TBD: move to destination module specific Rte interface
+   sint16* lptrOutput
+);
+void Emo_HandleIoHwAb(void){
+   static sint16 ls16AdcResult[3u];
+   RteRead_AdcResult(&ls16AdcResult[0u]);
 
-extern void   Emo_HandleFoc_Adc1_1 (void);
-extern uint32 Emo_HandleFoc_Adc1_2 (void);
+   sint16 R1miR0    = ls16AdcResult[1u]    - ls16AdcResult[0u];
+   sint16 R0mioffs  = ls16AdcResult[0u]    - Emo_Svm.CsaOffsetAdw;
+   sint16 OffsmiR1  = Emo_Svm.CsaOffsetAdw - ls16AdcResult[1u];
+   static TPhaseCurr lstPhaseCurr;
+   switch(Emo_Svm.StoredSector1){
+      case 0: lstPhaseCurr.A = R0mioffs; lstPhaseCurr.B = R1miR0;   break;
+      case 1: lstPhaseCurr.A = R1miR0;   lstPhaseCurr.B = R0mioffs; break;
+      case 2: lstPhaseCurr.A = OffsmiR1; lstPhaseCurr.B = R0mioffs; break;
+      case 3: lstPhaseCurr.A = OffsmiR1; lstPhaseCurr.B = R1miR0;   break;
+      case 4: lstPhaseCurr.A = R1miR0;   lstPhaseCurr.B = OffsmiR1; break;
+      case 5: lstPhaseCurr.A = R0mioffs; lstPhaseCurr.B = OffsmiR1; break;
+      default: Emo_StopMotor(); break;
+   }
+   Emo_Svm.StoredSector1 = Emo_Svm.Sector;
+   RteWrite_PhaseCurr(&lstPhaseCurr);
+
+   Emo_Foc.StatCurr = Mat_Clarke(&lstPhaseCurr);
+}
+
 void Emo_HandleFoc(void){
-   uint16 angle;
-   uint16 ampl;
-   uint16 i;
+   Emo_HandleCcu6(
+         Emo_Svm.CompT13ValueDown
+      ,  Emo_Svm.comp60down
+      ,  Emo_Svm.comp61down
+      ,  Emo_Svm.comp62down
+   );
+
+   Emo_HandleAdc1();
+   Emo_HandleIoHwAb();
+
+   uint16   angle;
+   uint16   ampl;
+   uint16   i;
    TComplex Vect1 = {0, 0};
    TComplex Vect2;
-   sint16 Speed;
-   sint32 jj;
+   sint16   Speed;
+   sint32   jj;
 
-   Emo_AdcResult[2u] = Emo_AdcResult[0u];
-   Emo_HandleFoc_Adc1_1();
-   Emo_AdcResult[1u] = Emo_HandleFoc_Adc1_2();
-   CCU6_LoadShadowRegister_CC60(Emo_Svm.comp60down);
-   CCU6_LoadShadowRegister_CC61(Emo_Svm.comp61down);
-   CCU6_LoadShadowRegister_CC62(Emo_Svm.comp62down);
-   CCU6_EnableST_T12();
-   Emo_CurrAdc1();
-   Emo_Foc.StatCurr = Mat_Clarke(Rte_Buffer.PhaseCurr);
-   Emo_Foc.RotCurr  = Mat_Park(Emo_Foc.StatCurr, Emo_Foc.Angle);
+   Emo_Foc.RotCurr = Mat_Park(Emo_Foc.StatCurr, Emo_Foc.Angle);
    Emo_lEstFlux();
    if(Emo_Status.MotorState == EMO_MOTOR_STATE_START){
     Emo_Foc.StartAngle += Emo_Foc.StartFrequencySlope;
@@ -1184,7 +1194,7 @@ void Emo_HandleFoc(void){
    }
    else{
     Emo_Svm.Amp                = 0;
-    Emo_Svm.CsaOffsetAdwSumme += Emo_AdcResult[3u];
+    Emo_Svm.CsaOffsetAdwSumme += RteRead_Adc2();
     Emo_Svm.CounterOffsetAdw++;
     if(Emo_Svm.CounterOffsetAdw == 128){
       i = Emo_Svm.CsaOffsetAdwSumme >> 8;

@@ -201,7 +201,6 @@ extern uint32   Emo_StopMotor                                            (void);
 extern void     Emo_lInitFocVar                                          (void);
 extern void     Emo_HandleT2Overflow                                     (void);
 extern uint32   Emo_GetMotorState                                        (void);
-extern void     Emo_HandleAdc1                                           (void);
 extern void     Emo_HandleFoc                                            (void);
 extern void     Emo_InitFoc                                              (void);
 extern void     Emo_ExeSvmTest                                 (TEmo_Svm *pSvm);
