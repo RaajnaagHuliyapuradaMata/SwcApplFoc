@@ -655,12 +655,6 @@ void Emo_lEstFlux(void){
    Fluxrf.Imag = Emo_lEstFlux_Optimize(Flux.Imag, Temp);
 }
 
-void Emo_FluxAnglePll(void){
-  sint16 deltaphi = Emo_Foc.FluxAngle - Emo_Ctrl.FluxAnglePll;
-  sint16 domega   = __SSAT(Mat_FixMulScale(deltaphi, Emo_Ctrl.Pllkp, 0) + Emo_Ctrl.Speedpll, MAT_FIX_SAT);
-  Emo_Ctrl.FluxAnglePll = Emo_Ctrl.FluxAnglePll + domega;
-}
-
 #include "Table.hpp"
 extern bool Emo_lExeSvm_Ccu6_1(void);
 extern void Emo_lExeSvm_Ccu6_2(void);
@@ -1053,43 +1047,13 @@ void Emo_lExeSvm(TEmo_Svm *pSvm){
    }
 }
 
-extern void Emo_HandleCcu6(
-      uint16 lu16CompT13ValueDown
-   ,  uint16 lu16Comp60down
-   ,  uint16 lu16Comp61down
-   ,  uint16 lu16Comp62down
+extern uint32 Emo_StopMotor(void);
+extern void RteRead_AdcResult(  //TBD: move to destination module specific Rte interface
+   sint16* lptrOutput
 );
-extern void   Emo_HandleAdc1   (void);
-extern void   Emo_HandleIoHwAb (void);
-extern uint32 RteRead_Adc2     (void);
-
 #include "infProjectARA_Exp.hpp" //TBD: move to destination module specific Rte interface
 extern void RteWrite_PhaseCurr(  //TBD: move to destination module specific Rte interface
    TPhaseCurr* lptrInput
-);
-#include "Mat.hpp"
-extern uint32 Emo_StopMotor(void);
-TComplex Mat_Clarke(
-   TPhaseCurr* lptrInput
-){
-   TComplex StatCurr = {0, 0};
-   StatCurr.Real     = __SSAT(
-         4 * lptrInput->A
-      ,  MAT_FIX_SAT
-   );
-   StatCurr.Imag = (sint16)__SSAT(
-         Mat_FixMulScale(
-               MAT_ONE_OVER_SQRT_3
-            ,          ((sint32)lptrInput->A)
-               +  (2 * ((sint32)lptrInput->B))
-            ,  2
-         )
-      ,  MAT_FIX_SAT
-   );
-   return StatCurr;
-}
-extern void RteRead_AdcResult(  //TBD: move to destination module specific Rte interface
-   sint16* lptrOutput
 );
 void Emo_HandleIoHwAb(void){
    static sint16 ls16AdcResult[3u];
@@ -1110,10 +1074,38 @@ void Emo_HandleIoHwAb(void){
    }
    Emo_Svm.StoredSector1 = Emo_Svm.Sector;
    RteWrite_PhaseCurr(&lstPhaseCurr);
-
-   Emo_Foc.StatCurr = Mat_Clarke(&lstPhaseCurr);
 }
 
+#include "Mat.hpp"
+TComplex Mat_Clarke(
+   TPhaseCurr* lptrInput
+){
+   TComplex StatCurr = {0, 0};
+   StatCurr.Real     = __SSAT(
+         4 * lptrInput->A
+      ,  MAT_FIX_SAT
+   );
+   StatCurr.Imag = (sint16)__SSAT(
+         Mat_FixMulScale(
+               MAT_ONE_OVER_SQRT_3
+            ,          ((sint32)lptrInput->A)
+               +  (2 * ((sint32)lptrInput->B))
+            ,  2
+         )
+      ,  MAT_FIX_SAT
+   );
+   return StatCurr;
+}
+extern void Emo_HandleCcu6(
+      uint16 lu16CompT13ValueDown
+   ,  uint16 lu16Comp60down
+   ,  uint16 lu16Comp61down
+   ,  uint16 lu16Comp62down
+);
+void RteRead_PhaseCurr(  //TBD: move to destination module specific Rte interface
+   TPhaseCurr* lptrOutput
+);
+extern uint32 RteRead_Adc2(void);
 void Emo_HandleFoc(void){
    Emo_HandleCcu6(
          Emo_Svm.CompT13ValueDown
@@ -1122,94 +1114,82 @@ void Emo_HandleFoc(void){
       ,  Emo_Svm.comp62down
    );
 
-   Emo_HandleAdc1();
-   Emo_HandleIoHwAb();
+   static TPhaseCurr lstPhaseCurr;
+   RteRead_PhaseCurr(&lstPhaseCurr);
 
-   uint16   angle;
-   uint16   ampl;
-   uint16   i;
-   TComplex Vect1 = {0, 0};
-   TComplex Vect2;
-   sint16   Speed;
-   sint32   jj;
-
-   Emo_Foc.RotCurr = Mat_Park(Emo_Foc.StatCurr, Emo_Foc.Angle);
+   Emo_Foc.StatCurr = Mat_Clarke(&lstPhaseCurr);
+   Emo_Foc.RotCurr  = Mat_Park(Emo_Foc.StatCurr, Emo_Foc.Angle);
    Emo_lEstFlux();
-   if(Emo_Status.MotorState == EMO_MOTOR_STATE_START){
-    Emo_Foc.StartAngle += Emo_Foc.StartFrequencySlope;
-    Emo_Foc.Angle = Emo_Foc.StartAngle;
-    Emo_Ctrl.PtrAngle = (Emo_Ctrl.PtrAngle + 1) & 0x1f;
-    if(Emo_Ctrl.Anglersptr == 32){
-      angle = Emo_Ctrl.AngleBuffer[Emo_Ctrl.PtrAngle];
-      Emo_Ctrl.AngleBuffer[Emo_Ctrl.PtrAngle] = Emo_Foc.FluxAngle;
-      Emo_Ctrl.Speedest = Emo_Foc.FluxAngle - angle;
-    }
-    else{
-      Emo_Ctrl.AngleBuffer[Emo_Ctrl.PtrAngle] = Emo_Foc.FluxAngle;
-      Emo_Ctrl.Speedest = Emo_Foc.FluxAngle - Emo_Ctrl.AngleBuffer[(Emo_Ctrl.PtrAngle - Emo_Ctrl.Anglersptr) & 0x1f];
-    }
-    Emo_Ctrl.Speedpll = Emo_Ctrl.Speedest >> Emo_Ctrl.Exppllhigh;
-    jj = Mat_FixMulScale(Emo_Ctrl.Speedest, Emo_Ctrl.Factorspeed, Emo_Ctrl.Expspeedhigh);
-    Speed = jj / Emo_Foc.PolePair;
-    Emo_Ctrl.ActSpeed = Mat_ExeLp_without_min_max(&Emo_Ctrl.SpeedLp, Speed);
-    Emo_FluxAnglePll();
-    if(Emo_Ctrl.RefSpeed > 0){
-      Emo_Ctrl.RefCurr = Emo_Foc.StartCurrent;
-    }
-    else{
-      Emo_Ctrl.RefCurr = -Emo_Foc.StartCurrent;
-    }
-    Emo_Foc.RotVolt.Real = Mat_ExePi(&Emo_Ctrl.RealCurrPi, Emo_Ctrl.RefCurr - Emo_Foc.RotCurr.Real);
-    Emo_Foc.RotVolt.Imag = Mat_ExePi(&Emo_Ctrl.ImagCurrPi, 0 - Emo_Foc.RotCurr.Imag);
+   Emo_Ctrl.PtrAngle = (Emo_Ctrl.PtrAngle+1)&0x1f;
+
+   uint16 lu16EmoCtrlAnglersptr_Sat;
+   if(32 == Emo_Ctrl.Anglersptr){lu16EmoCtrlAnglersptr_Sat = 0;}
+   else                         {lu16EmoCtrlAnglersptr_Sat = Emo_Ctrl.Anglersptr;}
+
+   uint16 lu16Angle = Emo_Ctrl.AngleBuffer[(Emo_Ctrl.PtrAngle-lu16EmoCtrlAnglersptr_Sat)&0x1f];
+   Emo_Ctrl.AngleBuffer[Emo_Ctrl.PtrAngle] = Emo_Foc.FluxAngle;
+   Emo_Ctrl.Speedest = Emo_Foc.FluxAngle - lu16Angle;
+   Emo_Ctrl.Speedpll = Emo_Ctrl.Speedest >> Emo_Ctrl.Exppllhigh;
+   sint32 jj = Mat_FixMulScale(Emo_Ctrl.Speedest, Emo_Ctrl.Factorspeed, Emo_Ctrl.Expspeedhigh);
+   sint16 Speed = jj / Emo_Foc.PolePair;
+   Emo_Ctrl.ActSpeed = Mat_ExeLp_without_min_max(&Emo_Ctrl.SpeedLp, Speed);
+   sint16 deltaphi = Emo_Foc.FluxAngle - Emo_Ctrl.FluxAnglePll;
+   sint16 domega = __SSAT(Mat_FixMulScale(deltaphi, Emo_Ctrl.Pllkp, 0) + Emo_Ctrl.Speedpll, MAT_FIX_SAT);
+   Emo_Ctrl.FluxAnglePll = Emo_Ctrl.FluxAnglePll + domega;
+
+   sint16 ls16EmoCtrlRefCurr_Real;
+   sint16 ls16EmoCtrlRefCurr_Imag;
+   if(
+         EMO_MOTOR_STATE_START
+      == Emo_Status.MotorState
+   ){
+      Emo_Foc.StartAngle += Emo_Foc.StartFrequencySlope;
+      if(0 < Emo_Ctrl.RefSpeed){Emo_Ctrl.RefCurr =  Emo_Foc.StartCurrent;}
+      else                     {Emo_Ctrl.RefCurr = -Emo_Foc.StartCurrent;}
+
+      Emo_Foc.Angle           = Emo_Foc.StartAngle;
+      ls16EmoCtrlRefCurr_Real = Emo_Ctrl.RefCurr;
+      ls16EmoCtrlRefCurr_Imag = 0;
    }
    else{
-    Emo_Ctrl.PtrAngle = (Emo_Ctrl.PtrAngle + 1) & 0x1f;
-    if(Emo_Ctrl.Anglersptr == 32){
-      angle = Emo_Ctrl.AngleBuffer[Emo_Ctrl.PtrAngle];
-      Emo_Ctrl.AngleBuffer[Emo_Ctrl.PtrAngle] = Emo_Foc.FluxAngle;
-      Emo_Ctrl.Speedest = Emo_Foc.FluxAngle - angle;
-    }
-    else{
-      Emo_Ctrl.AngleBuffer[Emo_Ctrl.PtrAngle] = Emo_Foc.FluxAngle;
-      Emo_Ctrl.Speedest = Emo_Foc.FluxAngle - Emo_Ctrl.AngleBuffer[(Emo_Ctrl.PtrAngle - Emo_Ctrl.Anglersptr) & 0x1f];
-    }
-    Emo_Ctrl.Speedpll = Emo_Ctrl.Speedest >> Emo_Ctrl.Exppllhigh;
-    jj = Mat_FixMulScale(Emo_Ctrl.Speedest, Emo_Ctrl.Factorspeed, Emo_Ctrl.Expspeedhigh);
-    Speed = jj / Emo_Foc.PolePair;
-    Emo_Ctrl.ActSpeed = Mat_ExeLp_without_min_max(&Emo_Ctrl.SpeedLp, Speed);
-    Emo_FluxAnglePll();
-    Emo_Foc.Angle = Emo_Ctrl.FluxAnglePll;
-    Emo_Foc.RotVolt.Real = Mat_ExePi(&Emo_Ctrl.RealCurrPi, 0 - Emo_Foc.RotCurr.Real);
-    Emo_Foc.RotVolt.Imag = Mat_ExePi(&Emo_Ctrl.ImagCurrPi, Emo_Ctrl.RefCurr - Emo_Foc.RotCurr.Imag);
+      Emo_Foc.Angle           = Emo_Ctrl.FluxAnglePll;
+      ls16EmoCtrlRefCurr_Real = 0;
+      ls16EmoCtrlRefCurr_Imag = Emo_Ctrl.RefCurr;
    }
+   Emo_Foc.RotVolt.Real = Mat_ExePi(&Emo_Ctrl.RealCurrPi, ls16EmoCtrlRefCurr_Real - Emo_Foc.RotCurr.Real);
+   Emo_Foc.RotVolt.Imag = Mat_ExePi(&Emo_Ctrl.ImagCurrPi, ls16EmoCtrlRefCurr_Imag - Emo_Foc.RotCurr.Imag);
+
+   TComplex Vect1 = {0, 0};
    Vect1.Real = __SSAT(Mat_FixMulScale(Emo_Foc.RotVolt.Real, Emo_Foc.Dcfactor1, 1), MAT_FIX_SAT);
    Vect1.Imag = __SSAT(Mat_FixMulScale(Emo_Foc.RotVolt.Imag, Emo_Foc.Dcfactor1, 1), MAT_FIX_SAT);
-   Vect2 = Limitsvektor(&Vect1, &Emo_Svm);
-   angle = Mat_CalcAngleAmp(Vect2, &ampl);
-   if(ampl > Emo_Svm.MaxAmp){
-    ampl = Emo_Svm.MaxAmp;
-   }
-   if(Emo_Svm.CounterOffsetAdw > 127){
-    Emo_Svm.Amp = ampl;
+
+   TComplex Vect2 = Limitsvektor(&Vect1, &Emo_Svm);
+
+   uint16 ampl;
+   lu16Angle = Mat_CalcAngleAmp(Vect2, &ampl);
+   if(ampl > Emo_Svm.MaxAmp){ampl = Emo_Svm.MaxAmp;}
+
+   if(127 < Emo_Svm.CounterOffsetAdw){
+      Emo_Svm.Amp = ampl;
    }
    else{
-    Emo_Svm.Amp                = 0;
-    Emo_Svm.CsaOffsetAdwSumme += RteRead_Adc2();
-    Emo_Svm.CounterOffsetAdw++;
-    if(Emo_Svm.CounterOffsetAdw == 128){
-      i = Emo_Svm.CsaOffsetAdwSumme >> 8;
-      if(i < Emo_Svm.CsaOffset){
-        i = Emo_Svm.CsaOffset;
+      Emo_Svm.Amp = 0;
+      Emo_Svm.CsaOffsetAdwSumme += RteRead_Adc2();
+      Emo_Svm.CounterOffsetAdw++;
+      if(128 == Emo_Svm.CounterOffsetAdw){
+         uint16 i = Emo_Svm.CsaOffsetAdwSumme >> 8;
+         if(i < Emo_Svm.CsaOffset){
+            i = Emo_Svm.CsaOffset;
+         }
+         else{
+            if((Emo_Svm.CsaOffset + 100) < i){
+               i = Emo_Svm.CsaOffset + 100;
+            }
+         }
+         Emo_Svm.CsaOffsetAdw = i;
       }
-      else{
-        if(i > (Emo_Svm.CsaOffset + 100)){
-          i = Emo_Svm.CsaOffset + 100;
-        }
-      }
-      Emo_Svm.CsaOffsetAdw = i;
-    }
    }
-   Emo_Svm.Angle = angle + Emo_Foc.Angle;
+   Emo_Svm.Angle = lu16Angle + Emo_Foc.Angle;
    Emo_Foc.StatVoltAmpM = __SSAT(Mat_FixMulScale(Emo_Svm.Amp, Emo_Foc.Dcfactor2, 3), MAT_FIX_SAT);
    Emo_Foc.StatVolt = Mat_PolarKartesisch(Emo_Foc.StatVoltAmpM, Emo_Svm.Angle);
    Emo_lExeSvm(&Emo_Svm);

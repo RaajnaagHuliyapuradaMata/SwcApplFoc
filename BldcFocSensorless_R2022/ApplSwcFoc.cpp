@@ -120,7 +120,7 @@ FUNC(void, APPLSWCFOC_CODE) module_ApplSwcFoc::DeInitFunction(
 #endif
 }
 
-extern void Emo_HandleFoc  (void);
+extern void Emo_HandleFoc(void);
 #define RteRead_SpeedReference() false //TBD: Implement RTE Read for this port
 FUNC(void, APPLSWCFOC_CODE) module_ApplSwcFoc::MainFunction(
    void
