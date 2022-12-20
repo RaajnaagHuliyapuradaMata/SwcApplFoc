@@ -120,8 +120,10 @@ FUNC(void, APPLSWCFOC_CODE) module_ApplSwcFoc::DeInitFunction(
 #endif
 }
 
-extern void Emo_HandleFoc(void);
-#define RteRead_SpeedReference() false //TBD: Implement RTE Read for this port
+extern void RteRead_SpeedReference (uint16* lptrOutput); //TBD: Move to header
+extern void Main_lStartMotor       (void); //TBD: Move to header
+extern void Main_lStopMotor        (void); //TBD: Move to header
+extern void Emo_HandleFoc          (void); //TBD: Move to header
 FUNC(void, APPLSWCFOC_CODE) module_ApplSwcFoc::MainFunction(
    void
 ){
@@ -132,29 +134,21 @@ FUNC(void, APPLSWCFOC_CODE) module_ApplSwcFoc::MainFunction(
    ){
 #endif
 
-// uint16 mV;
-   if(
-         true
-      == RteRead_SpeedReference() // ADC1_GetChResult_mV(&mV, ADC1_CH4)
-   ){
-/*
-      Emo_setspeedreferenz(mV / 2);
+   uint16 lu16SpeedReference;
+   RteRead_SpeedReference(&lu16SpeedReference);
       if(
-            1000
-         <  mV
+            500
+         <  lu16SpeedReference
       ){
          Main_lStartMotor();
       }
       else if(
-            800
-         >  mV
+            400
+         >  lu16SpeedReference
       ){
          Main_lStopMotor();
       }
       else{}
-*/
-   }
-   else{}
 
    Emo_HandleFoc();
 

@@ -418,62 +418,16 @@ void Emo_lInitFocVar(void){
    Emo_Svm.CsaOffsetAdwSumme   = 0;
 }
 
+extern void RteRead_SpeedReference (uint16* lptrOutput); //TBD: Move to header
 void Emo_HandleT2Overflow_StateStart(void){
    if(
          0
       == Emo_Foc.CountStart
    ){
-      if(
-            0
-         <  Emo_Ctrl.RefSpeed
-      ){
-         Emo_Foc.StartSpeedSlope = Mat_Ramp(
-               Emo_Foc.StartEndSpeed
-            ,  Emo_Foc.StartSpeedSlewRate
-            , &Emo_Foc.StartSpeedSlopeMem
-         );
-
-         Emo_Foc.StartFrequencySlope = __SSAT(
-               Mat_FixMulScale(
-                     Emo_Foc.StartSpeedSlope
-                  ,  Emo_Foc.SpeedtoFrequency
-                  ,  0
-               )
-            ,  MAT_FIX_SAT
-         );
-
-         if(
-               Emo_Foc.StartSpeedSlope
-            == Emo_Foc.StartEndSpeed
-         ){
-            Emo_Status.MotorState = EMO_MOTOR_STATE_RUN;
-            Emo_Ctrl.SpeedPi.IOut = Emo_Ctrl.RefCurr << 14;
-         }
-      }
-      else{
-         Emo_Foc.StartSpeedSlope = Mat_Ramp(
-              -Emo_Foc.StartEndSpeed
-            ,  Emo_Foc.StartSpeedSlewRate
-            , &Emo_Foc.StartSpeedSlopeMem
-         );
-
-         Emo_Foc.StartFrequencySlope = __SSAT(
-               Mat_FixMulScale(
-                     Emo_Foc.StartSpeedSlope
-                  ,  Emo_Foc.SpeedtoFrequency
-                  ,  0
-               )
-            ,  MAT_FIX_SAT
-         );
-
-         if(
-                Emo_Foc.StartSpeedSlope
-            == -Emo_Foc.StartEndSpeed
-         ){
-            Emo_Status.MotorState = EMO_MOTOR_STATE_RUN;
-            Emo_Ctrl.SpeedPi.IOut = Emo_Ctrl.RefCurr << 14;
-         }
-      }
+      uint16 lu16SpeedReference;
+      RteRead_SpeedReference(&lu16SpeedReference);
+      if(0 < lu16SpeedReference){Emo_Foc.StartSpeedSlope = Mat_Ramp( Emo_Foc.StartEndSpeed, Emo_Foc.StartSpeedSlewRate, &Emo_Foc.StartSpeedSlopeMem); Emo_Foc.StartFrequencySlope = __SSAT(Mat_FixMulScale(Emo_Foc.StartSpeedSlope, Emo_Foc.SpeedtoFrequency, 0), MAT_FIX_SAT); if(Emo_Foc.StartSpeedSlope ==  Emo_Foc.StartEndSpeed){Emo_Status.MotorState = EMO_MOTOR_STATE_RUN; Emo_Ctrl.SpeedPi.IOut = Emo_Ctrl.RefCurr << 14;}}
+      else                      {Emo_Foc.StartSpeedSlope = Mat_Ramp(-Emo_Foc.StartEndSpeed, Emo_Foc.StartSpeedSlewRate, &Emo_Foc.StartSpeedSlopeMem); Emo_Foc.StartFrequencySlope = __SSAT(Mat_FixMulScale(Emo_Foc.StartSpeedSlope, Emo_Foc.SpeedtoFrequency, 0), MAT_FIX_SAT); if(Emo_Foc.StartSpeedSlope == -Emo_Foc.StartEndSpeed){Emo_Status.MotorState = EMO_MOTOR_STATE_RUN; Emo_Ctrl.SpeedPi.IOut = Emo_Ctrl.RefCurr << 14;}}
    }
    else{
       if(
@@ -491,6 +445,7 @@ void Emo_HandleT2Overflow_StateStart(void){
    Emo_Ctrl.EnableStartVoltage = 1;
 }
 
+extern void RteRead_SpeedReference (uint16* lptrOutput); //TBD: Move to header
 void Emo_HandleT2Overflow_StateRun(void){
    if(
          Emo_Ctrl.ActSpeed
@@ -514,9 +469,12 @@ void Emo_HandleT2Overflow_StateRun(void){
          Emo_Ctrl.SpeedPi.IMin  = Emo_Ctrl.MinRefStartCurrent;
       }
    }
+
+   uint16 lu16SpeedReference;
+   RteRead_SpeedReference(&lu16SpeedReference);
    Emo_Ctrl.RefCurr = Mat_ExePi(
         &Emo_Ctrl.SpeedPi
-      ,  Emo_Ctrl.RefSpeed - Emo_Ctrl.ActSpeed
+      ,  lu16SpeedReference - Emo_Ctrl.ActSpeed
    );
 }
 
@@ -1105,7 +1063,8 @@ extern void Emo_HandleCcu6(
 void RteRead_PhaseCurr(  //TBD: move to destination module specific Rte interface
    TPhaseCurr* lptrOutput
 );
-extern uint32 RteRead_Adc2(void);
+extern void   RteRead_SpeedReference (uint16* lptrOutput); //TBD: Move to header
+extern uint32 RteRead_Adc2(void); //TBD: Move to header
 void Emo_HandleFoc(void){
    Emo_HandleCcu6(
          Emo_Svm.CompT13ValueDown
@@ -1144,8 +1103,11 @@ void Emo_HandleFoc(void){
       == Emo_Status.MotorState
    ){
       Emo_Foc.StartAngle += Emo_Foc.StartFrequencySlope;
-      if(0 < Emo_Ctrl.RefSpeed){Emo_Ctrl.RefCurr =  Emo_Foc.StartCurrent;}
-      else                     {Emo_Ctrl.RefCurr = -Emo_Foc.StartCurrent;}
+
+      uint16 lu16SpeedReference;
+      RteRead_SpeedReference(&lu16SpeedReference);
+      if(0 < lu16SpeedReference){Emo_Ctrl.RefCurr =  Emo_Foc.StartCurrent;}
+      else                      {Emo_Ctrl.RefCurr = -Emo_Foc.StartCurrent;}
 
       Emo_Foc.Angle           = Emo_Foc.StartAngle;
       ls16EmoCtrlRefCurr_Real = Emo_Ctrl.RefCurr;
@@ -1279,10 +1241,6 @@ TComplex Limitsvektorphase(
    return outp;
 }
 */
-
-void Emo_setspeedreferenz(uint16 speedreferenz){
-  Emo_Ctrl.RefSpeed = speedreferenz;
-}
 
 /******************************************************************************/
 /* EOF                                                                        */

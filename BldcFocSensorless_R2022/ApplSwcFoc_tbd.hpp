@@ -115,7 +115,6 @@ typedef struct{
 }TEmo_Foc;
 
 typedef struct{
-   sint16         RefSpeed;
    sint16         ActSpeed;
    sint16         RefCurr;
    sint16         ActSpeeddisplay;
