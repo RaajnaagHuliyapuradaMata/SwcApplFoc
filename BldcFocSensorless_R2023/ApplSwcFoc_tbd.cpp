@@ -1078,7 +1078,9 @@ void Emo_HandleFoc(void){
 
    Emo_Foc.StatCurr = Mat_Clarke(&lstPhaseCurr);
    Emo_Foc.RotCurr  = Mat_Park(Emo_Foc.StatCurr, Emo_Foc.Angle);
+
    Emo_lEstFlux();
+
    Emo_Ctrl.PtrAngle = (Emo_Ctrl.PtrAngle+1)&0x1f;
 
    uint16 lu16EmoCtrlAnglersptr_Sat;

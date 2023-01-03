@@ -133,7 +133,6 @@ FUNC(void, APPLSWCFOC_CODE) module_ApplSwcFoc::MainFunction(
       == IsInitDone
    ){
 #endif
-
    uint16 lu16SpeedReference;
    RteRead_SpeedReference(&lu16SpeedReference);
       if(
