@@ -206,8 +206,8 @@ extern void     Emo_EstFluxTest                                          (void);
 extern uint16   Emo_CalcAngleAmpTest              (TComplex Stat, uint16 *pAmp);
 extern void     Emo_CalcAngleAmpSvmTest                                  (void);
 extern void     Emo_setspeedreferenz                     (uint16 speedreferenz);
-extern TComplex Limitsvektor                     (TComplex *inp, TEmo_Svm *par);
-extern TComplex Limitsvektorphase                (TComplex *inp, TEmo_Svm *par);
+extern void     Limitsvektor (TComplex* lptrstOutput, TComplex* lptrstInput, TEmo_Svm* lptrstPar);
+extern TComplex Limitsvektorphase                (TComplex* inp, TEmo_Svm* par);
 
 /******************************************************************************/
 /* EOF                                                                        */

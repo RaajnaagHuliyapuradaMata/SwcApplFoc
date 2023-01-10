@@ -61,7 +61,6 @@ uint16      CSA_Offset;
 /* FUNCTIONS                                                                  */
 /******************************************************************************/
 static void Emo_lInitFocPar(void);
-
 static void Emo_lInitFocPar(void){
    float KU = 15.0;
    float KI;
@@ -515,6 +514,7 @@ void Emo_HandleT2Overflow(void){
    );
 
    Emo_Foc.DcLinkVoltage     = ADC1_GetRES_OUT6();
+   ERROR here!
    Emo_Foc.Dcfactor1         =  Emo_Foc.Kdcdivident1 / Emo_Foc.DcLinkVoltage;
    Emo_Foc.Dcfactor2         = __SSAT(Mat_FixMulScale(Emo_Foc.DcLinkVoltage, Emo_Foc.Kdcfactor2,   3), MAT_FIX_SAT);
    Emo_Ctrl.ImagCurrPi.IMax  = __SSAT(Mat_FixMulScale(Emo_Foc.DcLinkVoltage, Emo_Foc.Kdcfactoriqc, 5), MAT_FIX_SAT);
@@ -591,6 +591,7 @@ static sint16 Emo_lEstFlux_Optimize(
    return Output;
 }
 
+#include "DebugHere.hpp"
 void Emo_lEstFlux(void){
    static TComplex Flux;
    static TComplex Fluxrf;
@@ -604,7 +605,13 @@ void Emo_lEstFlux(void){
    Flux.Imag = __SSAT(fluxh_Imag - Mat_FixMulScale(Emo_Foc.StatCurr.Imag, Emo_Foc.PhaseInd, 0), MAT_FIX_SAT);
 
    uint16 Tempu;
+/******************************************************************************/
+   DebugHere(98, DebugHere_Proceed, -1);
+/******************************************************************************/
    Emo_Foc.FluxAngle = Mat_CalcAngleAmp(Flux, &Tempu);
+/******************************************************************************/
+   DebugHere(99, DebugHere_Proceed, -1);
+/******************************************************************************/
 
    uint16 FluxAbsValue = __SSAT(Mat_FixMul(Tempu, 32000), MAT_FIX_SAT + 1);
    Temp = Mat_ExeLp_without_min_max(&Emo_Ctrl.FluxbtrLp, FluxAbsValue);
@@ -1122,15 +1129,49 @@ void Emo_HandleFoc(void){
    }
    Emo_Foc.RotVolt.Real = Mat_ExePi(&Emo_Ctrl.RealCurrPi, ls16EmoCtrlRefCurr_Real - Emo_Foc.RotCurr.Real);
    Emo_Foc.RotVolt.Imag = Mat_ExePi(&Emo_Ctrl.ImagCurrPi, ls16EmoCtrlRefCurr_Imag - Emo_Foc.RotCurr.Imag);
+/******************************************************************************/
+   DebugHere(30, DebugHere_Proceed, Emo_Foc.Dcfactor1);
+/******************************************************************************/
+/******************************************************************************/
+   DebugHere(31, DebugHere_Proceed, Emo_Foc.RotVolt.Real);
+/******************************************************************************/
+/******************************************************************************/
+   DebugHere(32, DebugHere_Proceed, Emo_Foc.RotVolt.Imag);
+/******************************************************************************/
+/******************************************************************************/
+   DebugHere(33, DebugHere_Proceed, Mat_FixMulScale(Emo_Foc.RotVolt.Real, Emo_Foc.Dcfactor1, 1));
+/******************************************************************************/
+/******************************************************************************/
+   DebugHere(34, DebugHere_Proceed, Mat_FixMulScale(Emo_Foc.RotVolt.Imag, Emo_Foc.Dcfactor1, 1));
+/******************************************************************************/
 
    TComplex Vect1 = {0, 0};
+   TComplex Vect2 = {0, 0};
    Vect1.Real = __SSAT(Mat_FixMulScale(Emo_Foc.RotVolt.Real, Emo_Foc.Dcfactor1, 1), MAT_FIX_SAT);
    Vect1.Imag = __SSAT(Mat_FixMulScale(Emo_Foc.RotVolt.Imag, Emo_Foc.Dcfactor1, 1), MAT_FIX_SAT);
+/******************************************************************************/
+   DebugHere(35, DebugHere_Proceed, Vect1.Real);
+/******************************************************************************/
+/******************************************************************************/
+   DebugHere(36, DebugHere_Proceed, Vect1.Imag);
+/******************************************************************************/
 
-   TComplex Vect2 = Limitsvektor(&Vect1, &Emo_Svm);
+   Limitsvektor(&Vect2, &Vect1, &Emo_Svm);
+/******************************************************************************/
+   DebugHere(37, DebugHere_Proceed, Vect2.Real);
+/******************************************************************************/
+/******************************************************************************/
+   DebugHere(38, DebugHere_Proceed, Vect2.Real);
+/******************************************************************************/
 
    uint16 ampl;
+/******************************************************************************/
+   DebugHere(10, DebugHere_Proceed, -1);
+/******************************************************************************/
    lu16Angle = Mat_CalcAngleAmp(Vect2, &ampl);
+/******************************************************************************/
+   DebugHere(11, DebugHere_Halt, -1);
+/******************************************************************************/
    if(ampl > Emo_Svm.MaxAmp){ampl = Emo_Svm.MaxAmp;}
 
    if(127 < Emo_Svm.CounterOffsetAdw){
@@ -1173,52 +1214,57 @@ TComplex Emo_CurrentDecoupling(void){
 #endif
 */
 
-TComplex Limitsvektor(
-      TComplex* inp
-   ,  TEmo_Svm* par
+void Limitsvektor(
+      TComplex* lptrstOutput
+   ,  TComplex* lptrstInput
+   ,  TEmo_Svm* lptrstPar
 ){
-   TComplex outp = {0, 0};
-   uint32 btrqu = inp->Real * inp->Real + inp->Imag * inp->Imag;
+   lptrstOutput->Real = 0;
+   lptrstOutput->Imag = 0;
 
-   if(btrqu > par->MaxAmpQuadrat){
-      if((abs(inp->Real)) > par->MaxAmp9091pr){
-         if(inp->Real < 0){
-            outp.Real = -par->MaxAmp9091pr;
+   uint32 lu32Btrqu = lptrstInput->Real * lptrstInput->Real + lptrstInput->Imag * lptrstInput->Imag;
+
+   if(lu32Btrqu > lptrstPar->MaxAmpQuadrat){
+      if((abs(lptrstInput->Real)) > lptrstPar->MaxAmp9091pr){
+         if(lptrstInput->Real < 0){
+            lptrstOutput->Real = -lptrstPar->MaxAmp9091pr;
          }
          else{
-            outp.Real = par->MaxAmp9091pr;
+            lptrstOutput->Real = lptrstPar->MaxAmp9091pr;
          }
 
-         if(inp->Imag < 0){
-            outp.Imag = -par->MaxAmp4164pr;
+         if(lptrstInput->Imag < 0){
+            lptrstOutput->Imag = -lptrstPar->MaxAmp4164pr;
          }
          else{
-            outp.Imag = par->MaxAmp4164pr;
+            lptrstOutput->Imag = lptrstPar->MaxAmp4164pr;
          }
       }
       else{
-         uint16 inpa = abs(inp->Real);
-                inpa = (inpa * par->Kfact256) >> MAT_FIX_SHIFT;
+         uint16 lu16Inpa = abs(lptrstInput->Real);
+                lu16Inpa = (lu16Inpa * lptrstPar->Kfact256) >> MAT_FIX_SHIFT;
 
-         if(inpa > 256){
-            inpa = 256;
+         if(lu16Inpa > 256){
+            lu16Inpa = 256;
          }
-         inpa = Table_sqrtmqu[inpa];
-         inpa = (inpa * par->MaxAmp) >> 8;
-         outp.Real = inp->Real;
-         if(inp->Imag < 0){
-            outp.Imag = -inpa;
+         lu16Inpa = Table_sqrtmqu[lu16Inpa];
+         lu16Inpa = (lu16Inpa * lptrstPar->MaxAmp) >> 8;
+         lptrstOutput->Real = lptrstInput->Real;
+         if(lptrstInput->Imag < 0){
+            lptrstOutput->Imag = -lu16Inpa;
          }
          else{
-            outp.Imag = inpa;
+            lptrstOutput->Imag = lu16Inpa;
          }
       }
    }
    else{
-      outp.Real = inp->Real;
-      outp.Imag = inp->Imag;
+      lptrstOutput->Real = lptrstInput->Real;
+      lptrstOutput->Imag = lptrstInput->Imag;
+/******************************************************************************/
+   DebugHere(24, DebugHere_Proceed, lptrstOutput->Real);
+/******************************************************************************/
    }
-   return outp;
 }
 
 /*
