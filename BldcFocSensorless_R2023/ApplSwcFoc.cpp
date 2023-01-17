@@ -120,9 +120,9 @@ FUNC(void, APPLSWCFOC_CODE) module_ApplSwcFoc::DeInitFunction(
 #endif
 }
 
-extern void RteRead_SpeedReference (uint16* lptrOutput); //TBD: Move to header
 extern void Main_lStartMotor       (void); //TBD: Move to header
 extern void Main_lStopMotor        (void); //TBD: Move to header
+extern void Emo_HandleT2Overflow   (void); //TBD: Move to header
 extern void Emo_HandleFoc          (void); //TBD: Move to header
 FUNC(void, APPLSWCFOC_CODE) module_ApplSwcFoc::MainFunction(
    void
@@ -133,8 +133,7 @@ FUNC(void, APPLSWCFOC_CODE) module_ApplSwcFoc::MainFunction(
       == IsInitDone
    ){
 #endif
-   uint16 lu16SpeedReference;
-   RteRead_SpeedReference(&lu16SpeedReference);
+      uint16 lu16SpeedReference = RteRead_SpeedReference();
       if(
             500
          <  lu16SpeedReference
@@ -149,7 +148,8 @@ FUNC(void, APPLSWCFOC_CODE) module_ApplSwcFoc::MainFunction(
       }
       else{}
 
-   Emo_HandleFoc();
+      Emo_HandleT2Overflow(); // TBD: needed appropriate scheduling, brought here for system variable update
+      Emo_HandleFoc();
 
 #if(STD_ON == ApplSwcFoc_InitCheck)
    }

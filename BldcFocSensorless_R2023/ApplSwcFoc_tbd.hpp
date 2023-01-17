@@ -96,7 +96,6 @@ typedef struct{
    sint16 SpeedtoFrequency;
    sint32 StartSpeedSlewRate;
    uint16 CsaGain;
-   uint16 DcLinkVoltage;
    uint16 Dcfactor1;
    sint16 StartSpeedSlope;
    sint16 StartFrequencySlope;

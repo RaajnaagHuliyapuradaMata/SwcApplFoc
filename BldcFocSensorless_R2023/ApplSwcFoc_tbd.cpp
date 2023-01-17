@@ -25,6 +25,7 @@
 #include "scu_defines.hpp"
 
 #include "ApplSwcFoc_Pbcfg.hpp"
+#include "Rte_ApplSwcFoc.hpp" // TBD: romove later
 
 /******************************************************************************/
 /* #DEFINES                                                                   */
@@ -417,16 +418,19 @@ void Emo_lInitFocVar(void){
    Emo_Svm.CsaOffsetAdwSumme   = 0;
 }
 
-extern void RteRead_SpeedReference (uint16* lptrOutput); //TBD: Move to header
 void Emo_HandleT2Overflow_StateStart(void){
    if(
          0
       == Emo_Foc.CountStart
    ){
-      uint16 lu16SpeedReference;
-      RteRead_SpeedReference(&lu16SpeedReference);
-      if(0 < lu16SpeedReference){Emo_Foc.StartSpeedSlope = Mat_Ramp( Emo_Foc.StartEndSpeed, Emo_Foc.StartSpeedSlewRate, &Emo_Foc.StartSpeedSlopeMem); Emo_Foc.StartFrequencySlope = __SSAT(Mat_FixMulScale(Emo_Foc.StartSpeedSlope, Emo_Foc.SpeedtoFrequency, 0), MAT_FIX_SAT); if(Emo_Foc.StartSpeedSlope ==  Emo_Foc.StartEndSpeed){Emo_Status.MotorState = EMO_MOTOR_STATE_RUN; Emo_Ctrl.SpeedPi.IOut = Emo_Ctrl.RefCurr << 14;}}
-      else                      {Emo_Foc.StartSpeedSlope = Mat_Ramp(-Emo_Foc.StartEndSpeed, Emo_Foc.StartSpeedSlewRate, &Emo_Foc.StartSpeedSlopeMem); Emo_Foc.StartFrequencySlope = __SSAT(Mat_FixMulScale(Emo_Foc.StartSpeedSlope, Emo_Foc.SpeedtoFrequency, 0), MAT_FIX_SAT); if(Emo_Foc.StartSpeedSlope == -Emo_Foc.StartEndSpeed){Emo_Status.MotorState = EMO_MOTOR_STATE_RUN; Emo_Ctrl.SpeedPi.IOut = Emo_Ctrl.RefCurr << 14;}}
+      sint16 ls16StartEndSpeed    = (0<RteRead_SpeedReference())?Emo_Foc.StartEndSpeed:-Emo_Foc.StartEndSpeed;
+      Emo_Foc.StartSpeedSlope     = Mat_Ramp(ls16StartEndSpeed, Emo_Foc.StartSpeedSlewRate, &Emo_Foc.StartSpeedSlopeMem);
+      Emo_Foc.StartFrequencySlope = __SSAT(Mat_FixMulScale(Emo_Foc.StartSpeedSlope, Emo_Foc.SpeedtoFrequency, 0), MAT_FIX_SAT);
+      
+      if(Emo_Foc.StartSpeedSlope == ls16StartEndSpeed){
+         Emo_Status.MotorState = EMO_MOTOR_STATE_RUN;
+         Emo_Ctrl.SpeedPi.IOut = Emo_Ctrl.RefCurr << 14;
+      }
    }
    else{
       if(
@@ -444,7 +448,6 @@ void Emo_HandleT2Overflow_StateStart(void){
    Emo_Ctrl.EnableStartVoltage = 1;
 }
 
-extern void RteRead_SpeedReference (uint16* lptrOutput); //TBD: Move to header
 void Emo_HandleT2Overflow_StateRun(void){
    if(
          Emo_Ctrl.ActSpeed
@@ -469,11 +472,9 @@ void Emo_HandleT2Overflow_StateRun(void){
       }
    }
 
-   uint16 lu16SpeedReference;
-   RteRead_SpeedReference(&lu16SpeedReference);
    Emo_Ctrl.RefCurr = Mat_ExePi(
         &Emo_Ctrl.SpeedPi
-      ,  lu16SpeedReference - Emo_Ctrl.ActSpeed
+      ,  RteRead_SpeedReference() - Emo_Ctrl.ActSpeed
    );
 }
 
@@ -513,11 +514,10 @@ void Emo_HandleT2Overflow(void){
       ,  Emo_Ctrl.ActSpeed
    );
 
-   Emo_Foc.DcLinkVoltage     = ADC1_GetRES_OUT6();
-   ERROR here!
-   Emo_Foc.Dcfactor1         =  Emo_Foc.Kdcdivident1 / Emo_Foc.DcLinkVoltage;
-   Emo_Foc.Dcfactor2         = __SSAT(Mat_FixMulScale(Emo_Foc.DcLinkVoltage, Emo_Foc.Kdcfactor2,   3), MAT_FIX_SAT);
-   Emo_Ctrl.ImagCurrPi.IMax  = __SSAT(Mat_FixMulScale(Emo_Foc.DcLinkVoltage, Emo_Foc.Kdcfactoriqc, 5), MAT_FIX_SAT);
+   uint16 lu16DcLinkVoltage  = RteRead_u16DcLinkVoltage();
+   Emo_Foc.Dcfactor1         =  Emo_Foc.Kdcdivident1 / lu16DcLinkVoltage;
+   Emo_Foc.Dcfactor2         = __SSAT(Mat_FixMulScale(lu16DcLinkVoltage, Emo_Foc.Kdcfactor2,   3), MAT_FIX_SAT);
+   Emo_Ctrl.ImagCurrPi.IMax  = __SSAT(Mat_FixMulScale(lu16DcLinkVoltage, Emo_Foc.Kdcfactoriqc, 5), MAT_FIX_SAT);
    Emo_Ctrl.ImagCurrPi.PiMax =  Emo_Ctrl.ImagCurrPi.IMax;
    Emo_Ctrl.ImagCurrPi.IMin  = -Emo_Ctrl.ImagCurrPi.IMax;
    Emo_Ctrl.ImagCurrPi.PiMin =  Emo_Ctrl.ImagCurrPi.IMin;
@@ -591,7 +591,6 @@ static sint16 Emo_lEstFlux_Optimize(
    return Output;
 }
 
-#include "DebugHere.hpp"
 void Emo_lEstFlux(void){
    static TComplex Flux;
    static TComplex Fluxrf;
@@ -605,13 +604,7 @@ void Emo_lEstFlux(void){
    Flux.Imag = __SSAT(fluxh_Imag - Mat_FixMulScale(Emo_Foc.StatCurr.Imag, Emo_Foc.PhaseInd, 0), MAT_FIX_SAT);
 
    uint16 Tempu;
-/******************************************************************************/
-   DebugHere(98, DebugHere_Proceed, -1);
-/******************************************************************************/
    Emo_Foc.FluxAngle = Mat_CalcAngleAmp(Flux, &Tempu);
-/******************************************************************************/
-   DebugHere(99, DebugHere_Proceed, -1);
-/******************************************************************************/
 
    uint16 FluxAbsValue = __SSAT(Mat_FixMul(Tempu, 32000), MAT_FIX_SAT + 1);
    Temp = Mat_ExeLp_without_min_max(&Emo_Ctrl.FluxbtrLp, FluxAbsValue);
@@ -1070,7 +1063,7 @@ extern void Emo_HandleCcu6(
 void RteRead_PhaseCurr(  //TBD: move to destination module specific Rte interface
    TPhaseCurr* lptrOutput
 );
-extern void   RteRead_SpeedReference (uint16* lptrOutput); //TBD: Move to header
+
 extern uint32 RteRead_Adc2(void); //TBD: Move to header
 void Emo_HandleFoc(void){
    Emo_HandleCcu6(
@@ -1112,13 +1105,11 @@ void Emo_HandleFoc(void){
       == Emo_Status.MotorState
    ){
       Emo_Foc.StartAngle += Emo_Foc.StartFrequencySlope;
+      Emo_Foc.Angle       = Emo_Foc.StartAngle;
 
-      uint16 lu16SpeedReference;
-      RteRead_SpeedReference(&lu16SpeedReference);
-      if(0 < lu16SpeedReference){Emo_Ctrl.RefCurr =  Emo_Foc.StartCurrent;}
-      else                      {Emo_Ctrl.RefCurr = -Emo_Foc.StartCurrent;}
+      if(0 < RteRead_SpeedReference()){Emo_Ctrl.RefCurr =  Emo_Foc.StartCurrent;}
+      else                            {Emo_Ctrl.RefCurr = -Emo_Foc.StartCurrent;}
 
-      Emo_Foc.Angle           = Emo_Foc.StartAngle;
       ls16EmoCtrlRefCurr_Real = Emo_Ctrl.RefCurr;
       ls16EmoCtrlRefCurr_Imag = 0;
    }
@@ -1129,49 +1120,16 @@ void Emo_HandleFoc(void){
    }
    Emo_Foc.RotVolt.Real = Mat_ExePi(&Emo_Ctrl.RealCurrPi, ls16EmoCtrlRefCurr_Real - Emo_Foc.RotCurr.Real);
    Emo_Foc.RotVolt.Imag = Mat_ExePi(&Emo_Ctrl.ImagCurrPi, ls16EmoCtrlRefCurr_Imag - Emo_Foc.RotCurr.Imag);
-/******************************************************************************/
-   DebugHere(30, DebugHere_Proceed, Emo_Foc.Dcfactor1);
-/******************************************************************************/
-/******************************************************************************/
-   DebugHere(31, DebugHere_Proceed, Emo_Foc.RotVolt.Real);
-/******************************************************************************/
-/******************************************************************************/
-   DebugHere(32, DebugHere_Proceed, Emo_Foc.RotVolt.Imag);
-/******************************************************************************/
-/******************************************************************************/
-   DebugHere(33, DebugHere_Proceed, Mat_FixMulScale(Emo_Foc.RotVolt.Real, Emo_Foc.Dcfactor1, 1));
-/******************************************************************************/
-/******************************************************************************/
-   DebugHere(34, DebugHere_Proceed, Mat_FixMulScale(Emo_Foc.RotVolt.Imag, Emo_Foc.Dcfactor1, 1));
-/******************************************************************************/
 
    TComplex Vect1 = {0, 0};
    TComplex Vect2 = {0, 0};
    Vect1.Real = __SSAT(Mat_FixMulScale(Emo_Foc.RotVolt.Real, Emo_Foc.Dcfactor1, 1), MAT_FIX_SAT);
    Vect1.Imag = __SSAT(Mat_FixMulScale(Emo_Foc.RotVolt.Imag, Emo_Foc.Dcfactor1, 1), MAT_FIX_SAT);
-/******************************************************************************/
-   DebugHere(35, DebugHere_Proceed, Vect1.Real);
-/******************************************************************************/
-/******************************************************************************/
-   DebugHere(36, DebugHere_Proceed, Vect1.Imag);
-/******************************************************************************/
 
    Limitsvektor(&Vect2, &Vect1, &Emo_Svm);
-/******************************************************************************/
-   DebugHere(37, DebugHere_Proceed, Vect2.Real);
-/******************************************************************************/
-/******************************************************************************/
-   DebugHere(38, DebugHere_Proceed, Vect2.Real);
-/******************************************************************************/
 
    uint16 ampl;
-/******************************************************************************/
-   DebugHere(10, DebugHere_Proceed, -1);
-/******************************************************************************/
    lu16Angle = Mat_CalcAngleAmp(Vect2, &ampl);
-/******************************************************************************/
-   DebugHere(11, DebugHere_Halt, -1);
-/******************************************************************************/
    if(ampl > Emo_Svm.MaxAmp){ampl = Emo_Svm.MaxAmp;}
 
    if(127 < Emo_Svm.CounterOffsetAdw){
@@ -1261,9 +1219,6 @@ void Limitsvektor(
    else{
       lptrstOutput->Real = lptrstInput->Real;
       lptrstOutput->Imag = lptrstInput->Imag;
-/******************************************************************************/
-   DebugHere(24, DebugHere_Proceed, lptrstOutput->Real);
-/******************************************************************************/
    }
 }
 
