@@ -7,7 +7,7 @@
 /******************************************************************************/
 /* #INCLUDES                                                                  */
 /******************************************************************************/
-#include "ConstApplSwcFoc.hpp"
+#include "infApplSwcFoc_ServiceNvM_Types.hpp"
 #include "CfgApplSwcFoc.hpp"
 #include "ApplSwcFoc_core.hpp"
 #include "infApplSwcFoc_Exp.hpp"
