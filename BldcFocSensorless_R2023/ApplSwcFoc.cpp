@@ -13,19 +13,10 @@
 /******************************************************************************/
 /* #DEFINES                                                                   */
 /******************************************************************************/
-#define APPLSWCFOC_AR_RELEASE_VERSION_MAJOR                                    4
-#define APPLSWCFOC_AR_RELEASE_VERSION_MINOR                                    3
 
 /******************************************************************************/
 /* MACROS                                                                     */
 /******************************************************************************/
-#if(APPLSWCFOC_AR_RELEASE_VERSION_MAJOR != STD_AR_RELEASE_VERSION_MAJOR)
-   #error "Incompatible APPLSWCFOC_AR_RELEASE_VERSION_MAJOR!"
-#endif
-
-#if(APPLSWCFOC_AR_RELEASE_VERSION_MINOR != STD_AR_RELEASE_VERSION_MINOR)
-   #error "Incompatible APPLSWCFOC_AR_RELEASE_VERSION_MINOR!"
-#endif
 
 /******************************************************************************/
 /* TYPEDEFS                                                                   */
@@ -51,7 +42,7 @@ extern void   BDRV_Init (void); //TBD: use interface headers as per architecture
 extern uint32 Emo_Init  (void); //TBD: use interface headers as per architecture
 
 FUNC(void, APPLSWCFOC_CODE) module_ApplSwcFoc::InitFunction(
-      CONSTP2CONST(ConstModule_TypeAbstract, APPLSWCFOC_CONST,       APPLSWCFOC_APPL_CONST) lptrConstModule
+      CONSTP2CONST(ConstModule_TypeAbstract, APPLSWCFOC_CONST,       APPLSWCFOC_APPL_CONST) lptrNvMBlocksRomModule
    ,  CONSTP2CONST(CfgModule_TypeAbstract,   APPLSWCFOC_CONFIG_DATA, APPLSWCFOC_APPL_CONST) lptrCfgModule
 ){
 #if(STD_ON == ApplSwcFoc_InitCheck)
@@ -61,10 +52,10 @@ FUNC(void, APPLSWCFOC_CODE) module_ApplSwcFoc::InitFunction(
    ){
 #endif
       if(
-            (NULL_PTR != lptrConstModule)
+            (NULL_PTR != lptrNvMBlocksRomModule)
          && (NULL_PTR != lptrCfgModule)
       ){
-         lptrConst = (const ConstApplSwcFoc_Type*)lptrConstModule;
+         lptrNvMBlocksRom = lptrNvMBlocksRomModule;
          lptrCfg   = lptrCfgModule;
       }
       else{

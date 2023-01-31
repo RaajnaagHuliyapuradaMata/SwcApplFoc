@@ -32,14 +32,14 @@ class module_ApplSwcFoc:
 /******************************************************************************/
 /* OBJECTS                                                                    */
 /******************************************************************************/
-      const ConstApplSwcFoc_Type* lptrConst = (ConstApplSwcFoc_Type*)NULL_PTR;
+      const ConstModule_TypeAbstract* lptrNvMBlocksRom = (ConstModule_TypeAbstract*)NULL_PTR;
 
    public:
 /******************************************************************************/
 /* FUNCTIONS                                                                  */
 /******************************************************************************/
       FUNC(void, APPLSWCFOC_CODE) InitFunction(
-            CONSTP2CONST(ConstModule_TypeAbstract, APPLSWCFOC_CONST,       APPLSWCFOC_APPL_CONST) lptrConstModule
+            CONSTP2CONST(ConstModule_TypeAbstract, APPLSWCFOC_CONST,       APPLSWCFOC_APPL_CONST) lptrNvMBlocksRomModule
          ,  CONSTP2CONST(CfgModule_TypeAbstract,   APPLSWCFOC_CONFIG_DATA, APPLSWCFOC_APPL_CONST) lptrCfgModule
       );
       FUNC(void, APPLSWCFOC_CODE) DeInitFunction (void);
